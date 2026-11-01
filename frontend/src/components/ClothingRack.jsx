@@ -176,7 +176,7 @@ function RackInner({ products }) {
           <div className="no-scrollbar flex max-w-full flex-wrap justify-center gap-1.5" role="group" aria-label="Choose a piece on the rail">
             {products.map((p, i) => (
               <button key={p.id} type="button" onClick={() => setSel(i)} aria-pressed={sel === i} aria-label={`Piece ${i + 1}: ${p.title}`}
-                className={`h-10 min-w-10 rounded-full border px-2 font-display text-xs tracking-[0.12em] transition-[background-color,color,border-color] duration-300 ${sel === i ? "border-ink bg-ink text-ivory" : "border-line2 bg-ivory/70 text-charcoal hover:border-ink"}`}
+                className={`h-10 min-w-10 rounded-full border px-2 font-sans text-xs tabular-nums tracking-[0.08em] transition-[background-color,color,border-color] duration-300 ${sel === i ? "border-ink bg-ink text-ivory" : "border-line2 bg-ivory/70 text-charcoal hover:border-ink"}`}
                 data-testid={`rack-selector-${i + 1}`}>{String(i + 1).padStart(2, "0")}</button>
             ))}
           </div>
