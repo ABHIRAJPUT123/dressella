@@ -1,0 +1,31 @@
+{
+  "summary": "Iteration 4 tested the frontend only: scroll reveal, the mobile 'Sign in' label, the wishlist icon moving into the drawer on phones, and the COD order heading. I found two real bugs in scroll reveal, fixed both and re-tested; everything now passes. BUG 1: on the home page, 13 of 37 .reveal elements stayed at opacity 0 permanently, even after scrolling. These were section headings, the manifesto, editorial images, the newsletter block and the footer columns, so large parts of the page looked blank. BUG 2: the three .reveal-img editorial or story images never got 'is-in', so they stayed fully clipped and invisible. After my fixes, every .reveal element on every page gets 'is-in' at opacity 1 once scrolled into view. Elements far below the fold do not have 'is-in' at load (35 of 35 checked). Pages swept at 1920 width: home, shop, new-in, a category, collections, a collection, product (related cards), login, wishlist (with 3 items), checkout, track-order, about, faq, contact. At 390 width: home (all elements, including the horizontal collections carousel), account and the order view. The shop has only 10 products, so no 'Load more' button appears and that path could not be exercised. Clothing rack: hovering on desktop updates the caption, and clicking a garment opens the product page. On mobile the 10 numbered selectors work and the caption updates. Header: at 390 and 360 the 'Sign in' label is visible inside header-account-link with no overlap with the logo or bag and no horizontal scroll. At 320 the label is hidden. At 640 and 768 the label is hidden and the wishlist icon is visible. Below 640 the wishlist icon is hidden, and the drawer's mobile-nav-wishlist link reads 'Wishlist (2)' and opens /wishlist. When logged in there is no label and the link goes to /account. COD: a real COD order placed on mobile shows the heading 'Order confirmed — pay on delivery' with the lucide circle-check icon. The status text reads 'Please pay the delivery agent when your order arrives.' The only console errors are the expected guest 401s on /api/auth/me.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "useScrollReveal (lib/reveal.js)", "issue": "FIXED BY TESTER. Under React.StrictMode the effect runs, cleans up, then runs again. The first scan sets data-rv on every element. The cleanup disconnects the IntersectionObserver. The second scan skips those elements because its selector is :not([data-rv]), so everything rendered at first mount was never observed and stayed at opacity 0. Fix: the cleanup now removes data-rv from all elements.", "selector": ".reveal", "priority": "CRITICAL"},
+      {"component": ".reveal-img CSS (index.css)", "issue": "FIXED BY TESTER. Chromium's IntersectionObserver takes the target's own clip-path into account. Because clip-path: inset(0 0 100% 0) was on the observed element itself, its visible area was zero, so it never intersected and the editorial images stayed invisible. Fix: the clip-path and its transition moved to '.reveal-img > *'; the img rule now transitions both transform and clip-path.", "selector": ".reveal-img", "priority": "HIGH"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Order view at 390px", "issues": ["The 'Return & exchange policy' link sits beside the 'Continue shopping' button and wraps awkwardly onto two lines. Consider stacking them, or putting the link on its own line on mobile."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Review the two tester fixes in frontend/src/lib/reveal.js (cleanup clears data-rv) and frontend/src/index.css (reveal-img clip moved to children); keep them or rework them",
+    "Optional: stack the order-view CTA and the returns link on mobile"
+  ],
+  "critical_code_review_comments": [
+    "reveal.js: do not use a DOM marker (data-rv) that outlives the observer instance. A WeakSet scoped to each effect run would be cleaner than clearing data-rv in cleanup.",
+    "Never put clip-path, or anything else that makes the element's own visible area zero, on an element observed by IntersectionObserver. Animate an inner wrapper instead.",
+    "Items in the horizontal collections carousel that are off-screen get revealed only when swiped into view. That works, but the user may briefly see an empty slot while swiping."
+  ],
+  "updated_files": ["/app/frontend/src/lib/reveal.js", "/app/frontend/src/index.css"],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100% after tester fixes (before the fixes, the scroll-reveal feature was broken on the home page)"},
+  "seed_data_creation": "Placed 1 COD order for t1shopper1793560624@example.com (order ANR2611820644, address TEST Shopper / Jaipur)",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Login testids: login-email-input, login-password-input, login-submit-button. On the product page, select a size with button[data-testid^=pdp-size-] but exclude pdp-size-guide-button, then click pdp-buy-now-button. Checkout: checkout-saved-address-*, payment-method-cod, place-order-button. To check reveal, scroll with window.scrollTo(behavior 'instant') in steps, then assert document.querySelectorAll('.reveal:not(.is-in)').length == 0. The shop has only 10 products, so there is no load-more button.",
+  "rca of the issue": "Bug 1 repro: load / at 1920x1080, scroll to the bottom, and around 13 .reveal elements still have data-rv='1' but no is-in (opacity 0). Cause: double effect invocation in StrictMode combined with the persistent data-rv marker. Bug 2 repro: scrollIntoView on .reveal-img; is-in is never added and clip-path stays inset(0 0 100%). Cause: the IntersectionObserver intersection rect is clipped by the target's own clip-path. Both were fixed and verified on desktop and mobile."
+}

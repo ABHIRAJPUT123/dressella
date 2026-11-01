@@ -25,6 +25,7 @@ export function useScrollReveal() {
       mo.disconnect();
       io.disconnect();
       if (frame) cancelAnimationFrame(frame);
+      document.querySelectorAll("[data-rv]").forEach((el) => { delete el.dataset.rv; });
       root.classList.remove("reveal-on");
     };
   }, []);

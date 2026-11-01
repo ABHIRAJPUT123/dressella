@@ -80,8 +80,10 @@ export default function OrderView() {
           <div><p className="eyebrow mb-3">Delivering to</p><p className="text-sm leading-relaxed">{o.shipping.name}<br />{o.shipping.line1}{o.shipping.line2 && <>, {o.shipping.line2}</>}<br />{o.shipping.city}, {o.shipping.state} {o.shipping.pincode}<br />{o.shipping.phone}</p></div>
           <div><p className="eyebrow mb-3">Status</p><Timeline order={o} /></div>
         </div>
-        <Link to="/shop" className="btn-outline mt-12">Continue shopping</Link>
-        <Link to="/returns" className="ml-5 text-sm underline">Return & exchange policy</Link>
+        <div className="mt-12 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+          <Link to="/shop" className="btn-outline">Continue shopping</Link>
+          <Link to="/returns" className="text-sm underline">Return & exchange policy</Link>
+        </div>
       </div>
       <div className="lg:col-span-5"><Summary priced={{ lines: o.lines, totals: o.totals, coupon: o.coupon }} /></div>
     </div>
