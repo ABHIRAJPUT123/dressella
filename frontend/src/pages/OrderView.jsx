@@ -12,8 +12,8 @@ export const STATUS_LABEL = { pending: "Awaiting payment", paid: "Paid", pending
 export function Timeline({ order }) {
   return (
     <ol className="space-y-4 border-l border-line pl-6" data-testid="order-timeline">
-      {(order.timeline || []).map((t, i) => (
-        <li key={i} className="relative">
+      {(order.timeline || []).map((t) => (
+        <li key={`${t.status}-${t.at}`} className="relative">
           <span className="absolute -left-[29px] top-1.5 h-2 w-2 rounded-full bg-ink" aria-hidden="true" />
           <p className="text-sm font-semibold">{STATUS_LABEL[t.status] || t.status}</p>
           <p className="text-xs text-taupe">{new Date(t.at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}{t.note ? ` — ${t.note}` : ""}</p>

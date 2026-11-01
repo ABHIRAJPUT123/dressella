@@ -10,13 +10,13 @@ export function Breadcrumbs({ items }) {
     <nav aria-label="Breadcrumb" className="text-[10.5px] uppercase tracking-[0.24em] text-taupe" data-testid="breadcrumbs">
       <ol className="flex flex-wrap items-center gap-2">
         {items.map((it, i) => (
-          <li key={i} className="flex items-center gap-2">
+          <li key={`${it.label}-${it.to || ""}`} className="flex items-center gap-2">
             {it.to && i < items.length - 1 ? <Link to={it.to} className="link-u hover:text-ink">{it.label}</Link> : <span aria-current="page" className="text-ink">{it.label}</span>}
             {i < items.length - 1 && <span aria-hidden="true">/</span>}
           </li>
         ))}
       </ol>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
     </nav>
   );
 }

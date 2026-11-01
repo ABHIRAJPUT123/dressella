@@ -14,8 +14,21 @@ if not BASE_URL:
     except OSError:
         pass
 
-ADMIN_EMAIL = "admin@dressella.test"
-ADMIN_PASSWORD = "Dressella-0PA6Gfz73hkT3pXq"
+def _env_value(key):
+    if os.environ.get(key):
+        return os.environ[key]
+    try:
+        with open(os.path.join(os.path.dirname(__file__), "..", ".env")) as f:
+            for line in f:
+                if line.startswith(f"{key}="):
+                    return line.split("=", 1)[1].strip().strip('"')
+    except OSError:
+        pass
+    return ""
+
+
+ADMIN_EMAIL = _env_value("ADMIN_EMAIL")
+ADMIN_PASSWORD = _env_value("ADMIN_PASSWORD")
 
 
 @pytest.fixture
@@ -66,6 +79,8 @@ def test_register_and_me(s):
 
 # Admin login with the configured credentials (currently FAILS: .test TLD rejected by EmailStr)
 def test_admin_login(s):
+    if not (ADMIN_EMAIL and ADMIN_PASSWORD):
+        pytest.skip("ADMIN_EMAIL / ADMIN_PASSWORD not configured")
     r = s.post(f"{BASE_URL}/api/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
     assert r.status_code == 200, f"Admin login failed: {r.status_code} {r.text[:300]}"
     assert r.json().get("role") == "admin" or r.json().get("user", {}).get("role") == "admin"

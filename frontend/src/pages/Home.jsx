@@ -180,7 +180,7 @@ export default function Home() {
           </div>
         ) : <ProductGrid items={all.slice(0, 8)} loading={isLoading} />}
       </section>
-      {(s.editorials || []).slice(0, 1).map((e, i) => <Editorial key={i} e={e} i={i} />)}
+      {(s.editorials || []).slice(0, 1).map((e, i) => <Editorial key={e.link || e.title} e={e} i={i} />)}
       <Categories cats={cats} products={all} />
       {meta?.has_sales_data && best.data?.items?.length > 0 && (
         <section className="container-luxe pb-20 sm:pb-32" data-testid="home-bestsellers">
@@ -189,7 +189,7 @@ export default function Home() {
         </section>
       )}
       <Collections cols={cols} products={all} />
-      {(s.editorials || []).slice(1).map((e, i) => <div key={i} className="py-20 sm:py-32"><Editorial e={e} i={i + 1} flip /></div>)}
+      {(s.editorials || []).slice(1).map((e, i) => <div key={e.link || e.title} className="py-20 sm:py-32"><Editorial e={e} i={i + 1} flip /></div>)}
       <section className="relative overflow-hidden bg-ink text-ivory" data-testid="home-brand-story">
         <div className="container-luxe grid items-center gap-12 py-20 sm:py-32 lg:grid-cols-12">
           <div className="relative lg:col-span-5">
