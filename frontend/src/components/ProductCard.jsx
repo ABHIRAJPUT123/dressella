@@ -5,7 +5,7 @@ import { img, inr } from "@/lib/api";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 
-export function ProductCard({ p, priority }) {
+export function ProductCard({ p, priority, i = 0 }) {
   const { has, toggle } = useWishlist();
   const { add } = useCart();
   const [quick, setQuick] = useState(false);
@@ -14,7 +14,7 @@ export function ProductCard({ p, priority }) {
   const discount = p.compare_at_price > p.price ? Math.round((1 - p.price / p.compare_at_price) * 100) : 0;
 
   return (
-    <article className="group relative" data-testid={`product-card-${p.slug}`} onMouseLeave={() => setQuick(false)}>
+    <article className="reveal group relative" style={{ "--d": `${(i % 4) * 110}ms` }} data-testid={`product-card-${p.slug}`} onMouseLeave={() => setQuick(false)}>
       <div className="relative aspect-[3/4] overflow-hidden bg-linen">
         <Link to={`/product/${p.slug}`} aria-label={p.title} tabIndex={-1}>
           <img src={img(p.images?.[0]?.path)} alt={p.images?.[0]?.alt || p.title} loading={priority ? "eager" : "lazy"} decoding="async" width="600" height="800"
@@ -65,7 +65,7 @@ export const CardSkeleton = () => (
 export function ProductGrid({ items, loading, count = 8, cols = "grid-cols-2 md:grid-cols-3 lg:grid-cols-4" }) {
   return (
     <div className={`grid ${cols} gap-x-4 gap-y-14 sm:gap-x-6 lg:gap-x-8`} data-testid="product-grid">
-      {loading ? Array.from({ length: count }).map((_, i) => <CardSkeleton key={i} />) : items.map((p, i) => <ProductCard key={p.id} p={p} priority={i < 4} />)}
+      {loading ? Array.from({ length: count }).map((_, i) => <CardSkeleton key={i} />) : items.map((p, i) => <ProductCard key={p.id} p={p} i={i} priority={i < 4} />)}
     </div>
   );
 }

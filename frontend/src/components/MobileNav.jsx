@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useAuth } from "@/context/AuthContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 export function MobileNav({ open, onOpenChange, items, cats, cols }) {
   const { user } = useAuth();
+  const { ids } = useWishlist();
   const close = () => onOpenChange(false);
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -30,6 +32,7 @@ export function MobileNav({ open, onOpenChange, items, cats, cols }) {
             {cols.map((c) => <li key={c.slug}><Link to={`/collections/${c.slug}`} onClick={close} className="block py-1.5">{c.name}</Link></li>)}
           </ul>
           <div className="mt-10 space-y-3 border-t border-line pt-6 text-sm">
+            <Link to="/wishlist" onClick={close} className="block py-1.5" data-testid="mobile-nav-wishlist">Wishlist{ids.length > 0 && ` (${ids.length})`}</Link>
             <Link to={user ? "/account" : "/login"} onClick={close} className="block py-1.5" data-testid="mobile-nav-account">{user ? "My Account" : "Sign in / Register"}</Link>
             <Link to="/track-order" onClick={close} className="block py-1.5">Track Order</Link>
             <Link to="/contact" onClick={close} className="block py-1.5">Client Care</Link>

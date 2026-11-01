@@ -59,8 +59,8 @@ export function PageHero({ eyebrow, title, children }) {
     <section className="relative overflow-hidden border-b border-line bg-cream">
       <span className="pointer-events-none absolute -right-6 bottom-[-0.2em] hidden select-none font-display text-[11rem] leading-none tracking-[0.1em] text-beige/60 lg:block" aria-hidden="true">D</span>
       <div className="container-luxe relative py-16 sm:py-24">
-        {eyebrow && <p className="eyebrow mb-5 flex items-center gap-4"><span className="h-px w-8 bg-cocoa" />{eyebrow}</p>}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl">{title}</h1>
+        {eyebrow && <p className="reveal eyebrow mb-5 flex items-center gap-4"><span className="h-px w-8 bg-cocoa" />{eyebrow}</p>}
+        <h1 className="reveal text-4xl sm:text-5xl lg:text-6xl" style={{ "--d": "120ms" }}>{title}</h1>
         {children}
       </div>
     </section>

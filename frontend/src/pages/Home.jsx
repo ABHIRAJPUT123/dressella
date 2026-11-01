@@ -49,7 +49,7 @@ function Rail({ products, loading }) {
       <span className="showroom-panel left-[4%] w-[26%]" aria-hidden="true" />
       <span className="showroom-panel right-[4%] w-[26%]" aria-hidden="true" />
       <div className="container-luxe relative">
-        <div className="mb-10 grid gap-6 sm:mb-14 lg:grid-cols-12 lg:items-end">
+        <div className="reveal mb-10 grid gap-6 sm:mb-14 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <p className="eyebrow mb-4">The Dressella Rail</p>
             <h2 className="h-section">Step into the wardrobe</h2>
@@ -60,7 +60,7 @@ function Rail({ products, loading }) {
         </div>
         {loading ? <div className="mx-auto h-[420px] max-w-4xl animate-pulse bg-beige/40" aria-busy="true" /> : (
           <Suspense fallback={<div className="mx-auto h-[420px] max-w-4xl animate-pulse bg-beige/40" aria-busy="true" />}>
-            <ClothingRack products={products} />
+            <div className="reveal reveal-fade" style={{ "--d": "150ms" }}><ClothingRack products={products} /></div>
           </Suspense>
         )}
       </div>
@@ -81,7 +81,7 @@ function Marquee({ words }) {
 }
 
 const SectionHead = ({ eyebrow, title, to, cta = "View all", testid, index }) => (
-  <div className="mb-12 flex items-end justify-between gap-6 border-b border-line pb-8 sm:mb-16">
+  <div className="reveal mb-12 flex items-end justify-between gap-6 border-b border-line pb-8 sm:mb-16">
     <div className="flex items-end gap-6 sm:gap-10">
       {index && <span className="hidden font-display text-6xl leading-none text-beige sm:block lg:text-7xl">{index}</span>}
       <div><p className="eyebrow mb-3">{eyebrow}</p><h2 className="h-section">{title}</h2></div>
@@ -97,7 +97,7 @@ function Categories({ cats, products }) {
       <SectionHead index="03" eyebrow="Shop by category" title="The wardrobe, considered" to="/shop" cta="All clothing" testid="home-categories-view-all" />
       <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
         {tiles.map((c, i) => (
-          <Link key={c.slug} to={`/category/${c.slug}`} className={`group relative block overflow-hidden bg-linen ${i % 2 ? "lg:mt-20" : ""}`} data-testid={`home-category-${c.slug}`}>
+          <Link key={c.slug} to={`/category/${c.slug}`} className={`reveal group relative block overflow-hidden bg-linen ${i % 2 ? "lg:mt-20" : ""}`} style={{ "--d": `${(i % 4) * 120}ms` }} data-testid={`home-category-${c.slug}`}>
             <div className="aspect-[3/4]"><img src={img(c.image)} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.06]" /></div>
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent p-5 text-ivory sm:p-7">
               <p className="font-display text-[10px] tracking-[0.3em] text-ivory/70">{String(i + 1).padStart(2, "0")}</p>
@@ -114,8 +114,8 @@ function Categories({ cats, products }) {
 function Editorial({ e, flip, i }) {
   return (
     <section className="grid items-center gap-10 bg-ivory lg:grid-cols-12 lg:gap-0" data-testid={`home-editorial-${i}`}>
-      <div className={`lg:col-span-7 ${flip ? "lg:order-2" : ""}`}><div className="aspect-[4/5] overflow-hidden bg-linen lg:aspect-[6/7]"><img src={img(e.image)} alt={e.title} loading="lazy" className="h-full w-full object-cover object-[50%_15%]" /></div></div>
-      <div className={`px-5 pb-6 sm:px-10 lg:col-span-5 lg:px-20 lg:pb-0 ${flip ? "lg:order-1" : ""}`}>
+      <div className={`lg:col-span-7 ${flip ? "lg:order-2" : ""}`}><div className="reveal-img reveal aspect-[4/5] overflow-hidden bg-linen lg:aspect-[6/7]"><img src={img(e.image)} alt={e.title} loading="lazy" className="h-full w-full object-cover object-[50%_15%]" /></div></div>
+      <div className={`reveal px-5 pb-6 sm:px-10 lg:col-span-5 lg:px-20 lg:pb-0 ${flip ? "lg:order-1" : ""}`} style={{ "--d": "250ms" }}>
         <p className="font-display text-5xl leading-none text-beige lg:text-7xl">{String(i + 1).padStart(2, "0")}</p>
         <p className="eyebrow mb-5 mt-6">Editorial</p>
         <h2 className="h-section">{e.title}</h2>
@@ -135,7 +135,7 @@ function Collections({ cols, products }) {
           {cols.map((c, i) => {
             const pic = c.image || products.filter((p) => (p.collections || []).includes(c.slug))[0]?.images?.[1]?.path_lg || products[i]?.images?.[1]?.path_lg;
             return (
-              <Link key={c.slug} to={`/collections/${c.slug}`} className="group w-[72vw] shrink-0 snap-start sm:w-auto" data-testid={`home-collection-${c.slug}`}>
+              <Link key={c.slug} to={`/collections/${c.slug}`} className="reveal group w-[72vw] shrink-0 snap-start sm:w-auto" style={{ "--d": `${(i % 4) * 120}ms` }} data-testid={`home-collection-${c.slug}`}>
                 <div className="aspect-[3/4] overflow-hidden bg-linen"><img src={img(pic)} alt={c.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-[1.06]" /></div>
                 <div className="mt-5 flex items-baseline justify-between gap-3 border-b border-line2 pb-4">
                   <p className="font-serif text-2xl">{c.name}</p>
@@ -168,8 +168,8 @@ export default function Home() {
       {!isError && <Rail products={all} loading={isLoading} />}
       <Marquee words={[...cats.map((c) => c.name), ...cols.map((c) => c.name)]} />
       <section className="container-luxe grid gap-8 py-20 sm:py-32 lg:grid-cols-12" data-testid="home-manifesto">
-        <p className="eyebrow lg:col-span-3">DRESSELLA — Fashion for her</p>
-        <p className="font-serif text-3xl font-light leading-[1.22] sm:text-4xl lg:col-span-9 lg:text-5xl">Printed by hand-led tradition, cut with a modern line. <span className="italic text-cocoa">Pieces made to be lived in</span> — from courtyard mornings to city evenings.</p>
+        <p className="reveal eyebrow lg:col-span-3">DRESSELLA — Fashion for her</p>
+        <p className="reveal font-serif text-3xl font-light leading-[1.22] sm:text-4xl lg:col-span-9 lg:text-5xl" style={{ "--d": "150ms" }}>Printed by hand-led tradition, cut with a modern line. <span className="italic text-cocoa">Pieces made to be lived in</span> — from courtyard mornings to city evenings.</p>
       </section>
       <section className="container-luxe pb-20 sm:pb-32" data-testid="home-new-arrivals">
         <SectionHead index="02" eyebrow="Just in" title="New Arrivals" to="/new-in" testid="home-new-arrivals-view-all" />
@@ -192,11 +192,11 @@ export default function Home() {
       {(s.editorials || []).slice(1).map((e, i) => <div key={e.link || e.title} className="py-20 sm:py-32"><Editorial e={e} i={i + 1} flip /></div>)}
       <section className="relative overflow-hidden bg-ink text-ivory" data-testid="home-brand-story">
         <div className="container-luxe grid items-center gap-12 py-20 sm:py-32 lg:grid-cols-12">
-          <div className="relative lg:col-span-5">
+          <div className="reveal-img reveal relative lg:col-span-5">
             {story && <div className="aspect-[3/4] overflow-hidden"><img src={img(story.images?.[2]?.path_lg || story.images?.[0]?.path_lg)} alt="DRESSELLA pastel stripe midi dress" loading="lazy" className="h-full w-full object-cover" /></div>}
             <span className="pointer-events-none absolute -bottom-6 -right-4 hidden border border-champagne/40 lg:block" style={{ inset: "24px -24px -24px 24px" }} aria-hidden="true" />
           </div>
-          <div className="lg:col-span-6 lg:col-start-7">
+          <div className="reveal lg:col-span-6 lg:col-start-7" style={{ "--d": "250ms" }}>
             <p className="eyebrow mb-6 text-champagne">The DRESSELLA aesthetic</p>
             <h2 className="h-section">Quiet colour. Honest fabric. <span className="italic text-champagne">A line that moves with you.</span></h2>
             <p className="mt-8 max-w-lg text-sm leading-relaxed text-ivory/70 sm:text-base">DRESSELLA begins in Jaipur, where print and cloth have been a language for centuries. We choose breathable cottons and fluid rayons, keep our palettes soft and our silhouettes clean — and edit every piece for a wardrobe you'll return to, season after season.</p>
@@ -206,8 +206,8 @@ export default function Home() {
       </section>
       <section className="bg-cream" data-testid="home-newsletter">
         <div className="container-luxe grid gap-10 py-20 sm:py-28 lg:grid-cols-12">
-          <div className="lg:col-span-5"><p className="eyebrow mb-3">The DRESSELLA letter</p><h2 className="h-section">First to know</h2><p className="mt-4 text-sm text-taupe">New edits, restocks and stories from the atelier — occasionally, never noisily.</p></div>
-          <div className="lg:col-span-6 lg:col-start-7 lg:pt-10"><NewsletterForm /></div>
+          <div className="reveal lg:col-span-5"><p className="eyebrow mb-3">The DRESSELLA letter</p><h2 className="h-section">First to know</h2><p className="mt-4 text-sm text-taupe">New edits, restocks and stories from the atelier — occasionally, never noisily.</p></div>
+          <div className="reveal lg:col-span-6 lg:col-start-7 lg:pt-10" style={{ "--d": "150ms" }}><NewsletterForm /></div>
         </div>
       </section>
     </div>

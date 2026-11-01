@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BagDrawer } from "@/components/BagDrawer";
 import { CookieConsent } from "@/components/CookieConsent";
+import { useScrollReveal } from "@/lib/reveal";
 
 function Announcement() {
   const { data } = useMeta();
@@ -16,6 +17,7 @@ function Announcement() {
 export function Layout() {
   const { pathname } = useLocation();
   const { isError } = useMeta();
+  useScrollReveal();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);

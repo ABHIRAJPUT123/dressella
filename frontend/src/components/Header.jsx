@@ -91,8 +91,11 @@ export function Header() {
         </div>
         <div className="flex justify-center px-1"><Logo /></div>
         <div className="flex items-center justify-end">
-          <IconBtn label={user ? "My account" : "Sign in"} testid="header-account-link" to={user ? "/account" : "/login"}><User size={19} strokeWidth={1.4} /></IconBtn>
-          <IconBtn label={`Wishlist, ${ids.length} items`} testid="header-wishlist-link" to="/wishlist" badge={ids.length}><Heart size={19} strokeWidth={1.4} /></IconBtn>
+          <Link to={user ? "/account" : "/login"} aria-label={user ? "My account" : "Sign in"} className="relative inline-flex h-11 items-center justify-center gap-1.5 px-1.5 text-ink transition-opacity duration-300 hover:opacity-60 sm:w-11 sm:px-0" data-testid="header-account-link">
+            <User size={19} strokeWidth={1.4} />
+            {!user && <span className="text-[11px] font-medium tracking-[0.04em] max-[359px]:hidden sm:hidden" data-testid="header-signin-label">Sign in</span>}
+          </Link>
+          <span className="hidden sm:inline-flex"><IconBtn label={`Wishlist, ${ids.length} items`} testid="header-wishlist-link" to="/wishlist" badge={ids.length}><Heart size={19} strokeWidth={1.4} /></IconBtn></span>
           <IconBtn label={`Shopping bag, ${count} items`} testid="header-bag-button" onClick={() => setOpen(true)} badge={count}><ShoppingBag size={19} strokeWidth={1.4} /></IconBtn>
         </div>
       </div>

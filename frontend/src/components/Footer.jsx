@@ -24,7 +24,7 @@ export function Footer() {
           <p className="mt-6 max-w-xs font-serif text-3xl font-light leading-snug text-ivory/90">Fashion for her — rooted in Jaipur, edited for the world.</p>
           <div className="mt-8 max-w-sm"><NewsletterForm dark compact /></div>
         </div>
-        <div className="grid grid-cols-2 gap-10 sm:grid-cols-4 lg:col-span-7 lg:col-start-6">
+        <div className="reveal grid grid-cols-2 gap-10 sm:grid-cols-4 lg:col-span-7 lg:col-start-6">
           <Col title="Shop" links={[["New In", "/new-in"], ["All Clothing", "/shop"], ...cats.map((c) => [c.name, `/category/${c.slug}`])]} />
           <Col title="Edits" links={[["All Collections", "/collections"], ...cols.map((c) => [c.name, `/collections/${c.slug}`])]} />
           <Col title="Client Care" links={[["Contact Us", "/contact"], ["Track Order", "/track-order"], ["FAQs", "/faq"], ["Size Guide", "/size-guide"], ["Shipping", "/shipping-policy"], ["Returns & Exchanges", "/returns"]]} />

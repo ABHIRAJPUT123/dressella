@@ -24,6 +24,14 @@ export function Timeline({ order }) {
   );
 }
 
+function orderHeading(o, { cancelled, paymentReview, paid }) {
+  if (cancelled) return paid ? "Payment received after cancellation" : "This order was cancelled";
+  if (paymentReview) return "Payment received — order under review";
+  if (paid || o.payment_status === "payment_collected") return "Thank you — your order is confirmed";
+  if (o.payment_method === "cod") return "Order confirmed — pay on delivery";
+  return "Your order is awaiting payment";
+}
+
 export default function OrderView() {
   useSeo({ title: "Your order", noindex: true });
   const { id } = useParams();
@@ -39,6 +47,7 @@ export default function OrderView() {
   const cancelled = o.status === "cancelled";
   const paymentReview = o.status === "payment_review";
   const paid = o.payment_status === "paid" || o.payment_status === "refunded";
+  const codConfirmed = !cancelled && !paymentReview && o.payment_method === "cod";
 
   const pay = async () => {
     setBusy(true); setMsg("");
@@ -56,9 +65,9 @@ export default function OrderView() {
   return (
     <div className="container-luxe grid gap-12 py-12 sm:py-16 lg:grid-cols-12" data-testid="order-page">
       <div className="lg:col-span-7">
-        {cancelled ? <AlertTriangle size={36} strokeWidth={1.2} /> : paid ? <CheckCircle2 size={36} strokeWidth={1.2} aria-hidden="true" /> : <Clock size={36} strokeWidth={1.2} aria-hidden="true" />}
+        {cancelled ? <AlertTriangle size={36} strokeWidth={1.2} /> : paid || codConfirmed ? <CheckCircle2 size={36} strokeWidth={1.2} aria-hidden="true" /> : <Clock size={36} strokeWidth={1.2} aria-hidden="true" />}
         <p className="eyebrow mt-6">Order {o.order_number}</p>
-        <h1 className="mt-3 text-4xl sm:text-5xl" data-testid="order-heading">{cancelled ? (paid ? "Payment received after cancellation" : "This order was cancelled") : paymentReview ? "Payment received — order under review" : paid ? "Thank you — your order is confirmed" : "Your order is awaiting payment"}</h1>
+        <h1 className="mt-3 text-4xl sm:text-5xl" data-testid="order-heading">{orderHeading(o, { cancelled, paymentReview, paid })}</h1>
         <p className="mt-3 text-sm" data-testid="order-payment-details">
           Payment: {o.payment_method === "cod" ? "Cash on Delivery" : "Razorpay"} · {STATUS_LABEL[o.payment_status] || o.payment_status}
         </p>
