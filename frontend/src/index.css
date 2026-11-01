@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 40 50% 98%;
+        --foreground: 30 4% 10%;
+        --card: 40 50% 98%;
+        --card-foreground: 30 4% 10%;
+        --popover: 40 50% 98%;
+        --popover-foreground: 30 4% 10%;
+        --primary: 30 4% 10%;
+        --primary-foreground: 40 50% 98%;
+        --secondary: 38 40% 94%;
+        --secondary-foreground: 30 4% 10%;
+        --muted: 38 40% 94%;
+        --muted-foreground: 28 8% 40%;
+        --accent: 38 40% 94%;
+        --accent-foreground: 30 4% 10%;
+        --destructive: 2 55% 42%;
+        --destructive-foreground: 40 50% 98%;
+        --border: 36 24% 87%;
+        --input: 33 17% 74%;
+        --ring: 30 4% 10%;
+        --radius: 0rem;
+    }
+    * { @apply border-border; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+        @apply bg-ivory text-ink font-sans antialiased;
+        overflow-x: hidden;
+    }
+    h1, h2, h3, h4 { @apply font-serif font-normal; letter-spacing: -0.01em; }
+    ::selection { background: #D2C2A4; color: #1A1918; }
+    :focus-visible { outline: 2px solid #1A1918; outline-offset: 2px; }
+    img { max-width: 100%; }
+}
+
+@layer components {
+    .container-luxe { @apply mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-12; }
+    .eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-taupe; }
+    .btn-primary { @apply inline-flex items-center justify-center gap-2 bg-ink px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory transition-[background-color,color,opacity] duration-300 hover:bg-charcoal disabled:cursor-not-allowed disabled:opacity-50; }
+    .btn-outline { @apply inline-flex items-center justify-center gap-2 border border-ink px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink transition-[background-color,color] duration-300 hover:bg-ink hover:text-ivory disabled:opacity-50; }
+    .btn-light { @apply inline-flex items-center justify-center gap-2 bg-ivory px-8 py-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink transition-[background-color,color] duration-300 hover:bg-ink hover:text-ivory; }
+    .link-u { @apply relative inline-block; }
+    .link-u::after { content: ""; @apply absolute -bottom-0.5 left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300; }
+    .link-u:hover::after, .link-u[aria-current="page"]::after { @apply scale-x-100; }
+    .input-luxe { @apply h-12 w-full border border-line2 bg-transparent px-4 text-sm text-ink placeholder:text-mute transition-colors focus:border-ink focus:outline-none; }
+    .label-luxe { @apply mb-2 block text-[11px] font-semibold uppercase tracking-[0.16em] text-taupe; }
+    .chip { @apply inline-flex h-10 min-w-[2.75rem] items-center justify-center border border-line2 px-3 text-xs font-medium tracking-wide transition-colors hover:border-ink; }
+    .chip-on { @apply border-ink bg-ink text-ivory; }
+    .h-section { @apply font-serif text-3xl leading-tight sm:text-4xl lg:text-5xl; }
+}
+
+.grain::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .05; z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes slowzoom { from { transform: scale(1.08); } to { transform: scale(1); } }
+.rise { animation: rise .9s cubic-bezier(.2,.7,.2,1) both; }
+.slowzoom { animation: slowzoom 2.4s cubic-bezier(.2,.7,.2,1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+[data-debug-wrapper="true"] { display: contents !important; }

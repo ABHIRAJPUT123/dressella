@@ -1,0 +1,131 @@
+{
+  "project_name": "ANORA — Premium Luxury Women's Fashion E-Commerce",
+  "design_philosophy": {
+    "archetype": "LUXURY & EDITORIAL HERITAGE",
+    "inspiration": "The Collective (organized multi-category luxury discovery), Louis Vuitton (immersive editorial campaigns & elegant PDP), Prada (minimalist, generous whitespace, sharp serif & clean sans typography)",
+    "core_principles": [
+      "Tactile Craftsmanship: Blend Jaipur regal architecture with high-fashion minimalism",
+      "Whitespace as Luxury: Generous padding, no cramped layouts or excessive badges",
+      "Editorial Storytelling: Full-bleed campaign media, serif typography, 3:4 portrait ratios",
+      "Sophisticated Micro-interactions: Fluid drawer slide-outs, secondary image hover switch, elegant pin code validator"
+    ]
+  },
+  "theme": {
+    "mode": "Light Luxury Editorial (Default) with Dark Luxury Accent Surfaces",
+    "forbidden_colors": ["#7351B7", "#1B93A4", "neon green", "bright saturated cyan"],
+    "colors": {
+      "primary_bg": "#FDFBF7",
+      "secondary_bg": "#FAF6F0",
+      "accent_surface": "#F4EFE6",
+      "dark_surface": "#1A1918",
+      "brand_badge": "#A8706A",
+      "brand_champagne": "#D2C2A4",
+      "text_primary": "#1A1918",
+      "text_secondary": "#5C5651",
+      "text_muted": "#8C827A",
+      "border_subtle": "#E6DFD5",
+      "border_emphasis": "#C8BDB0",
+      "gold_accent": "#B89D66"
+    }
+  },
+  "typography": {
+    "heading_font": "Cormorant Garamond, Playfair Display, or serif fallback",
+    "body_font": "Manrope, Montserrat, or Clean Sans-Serif",
+    "heading_style": "font-serif tracking-tight font-normal text-charcoal",
+    "subheading_style": "uppercase tracking-[0.2em] text-xs font-semibold text-muted-taupe",
+    "scales": {
+      "h1_hero": "text-4xl sm:text-5xl lg:text-6xl font-serif font-light leading-tight",
+      "h2_section": "text-2xl sm:text-3xl lg:text-4xl font-serif leading-snug",
+      "h3_title": "text-xl sm:text-2xl font-serif",
+      "body_main": "text-sm sm:text-base leading-relaxed font-sans text-stone-700",
+      "caption": "text-xs tracking-wider uppercase font-sans text-stone-500"
+    }
+  },
+  "layout_and_spacing": {
+    "container_max_width": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing_scale": "Use 2x-3x generous spacing (py-16 to py-28 for sections, gap-8 to gap-12 for grids)",
+    "product_grid": "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8",
+    "aspect_ratios": "Product images MUST strictly use 3:4 portrait ratio (aspect-[3/4])"
+  },
+  "key_components_and_patterns": {
+    "header": {
+      "announcement_bar": "Slim top banner in deep charcoal (#1A1918) with champagne text, key messaging (e.g. Complimentary Jaipur Artisan Express Shipping)",
+      "navigation": "Clean centered logo badge, horizontal links (New In, Clothing, Dresses, Co-ord Sets, Tops, Occasionwear, Collections, Sale) with hover underline animation, icon triggers for Search, Account, Wishlist, Bag",
+      "mega_menu": "Hover-activated mega menu for category discovery with featured editorial banner"
+    },
+    "homepage_sections": [
+      "Hero Editorial Campaign (Full width 85vh, subtle parallax zoom, serif title, double CTAs)",
+      "Curated Category Grid (Asymmetric 3:4 cards: Jaipur Cotton Kurtis, Rayon Sets, A-Line Kurtas, Midi Dresses)",
+      "New Arrivals Slider / Bestsellers Tabs",
+      "Editorial Brand Story ('Born in Jaipur — Hand-carved Block Prints & Pure Fabrics')",
+      "Artisan Craftsmanship Showcase (Fabric callouts, sustainability & luxury finish)",
+      "Newsletter Subscription with consent checkbox & discount popover trigger"
+    ],
+    "shop_catalog": {
+      "filters_drawer": "Slide-out drawer with Category, Size (XS-3XL), Colour, Price Range, Availability, Occasion, Style filters",
+      "sort_dropdown": "Newest, Price: Low to High, Price: High to Low, Popularity",
+      "product_card": "Hover swap to 2nd model look, quick add to bag overlay button, wishlist heart toggle, subtle stock indicator, swatch dots"
+    },
+    "product_detail_page": {
+      "layout": "Sticky left gallery grid (large main image + zoom modal, 4 thumb views) and right sticky scroll detail column",
+      "features": ["SKU & Origin details", "Size selector with Interactive Size Guide Modal", "Accordion sections (Fabric & Care, Shipping & Returns, Jaipur Artisan Notes)", "Pincode delivery check validator", "Related / Recently Viewed Carousel"]
+    },
+    "slide_out_bag": {
+      "trigger": "Header cart button click",
+      "contents": "Item items, size edit, quantity stepper, gift wrap option, order summary, Express Checkout CTA button"
+    },
+    "account_and_admin": {
+      "user_account": "Tabbed layout (Orders & Tracking, Addresses, Saved Wishlist, Profile Settings)",
+      "admin_dashboard": "Clean metrics overview (Total Revenue, Orders, Customers), tables with status badges for Products, Orders, Banners, Newsletter subscribers, Coupons"
+    }
+  },
+  "media_assets": {
+    "official_logo": "/app/brand_assets/logo.jpeg",
+    "hero_campaign": "https://images.unsplash.com/photo-1589197585618-1f83bac27c38?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHw0fHxpbmRpYW4lMjB3b21hbiUyMGx1eHVyeSUyMGt1cnRpJTIwZWRpdG9yaWFsJTIwamFpcHVyJTIwZmFzaGlvbnxlbnwwfHx8fDE3OTE1MzE2MDZ8MA&ixlib=rb-4.1.0&q=85",
+    "jaipur_palace_bg": "https://images.unsplash.com/photo-1589352254486-4e1587272ea4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1Mjh8MHwxfHNlYXJjaHwzfHxqYWlwdXIlMjBwYWxhY2UlMjBhcmNoaXRlY3R1cmUlMjBiZWlnZSUyMHNhbmRzdG9uZSUyMGx1eHVyeSUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzkxNTMxNjA2fDA&ixlib=rb-4.1.0&q=85",
+    "model_beige_portrait": "https://images.unsplash.com/photo-1668952135120-7d997b1b3778?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBmYXNoaW9uJTIwbW9kZWwlMjBwb3J0cmFpdCUyMGJlaWdlJTIwYmFja2dyb3VuZCUyMGVkaXRvcmlhbHxlbnwwfHx8fDE3OTE1MzE2MDZ8MA&ixlib=rb-4.1.0&q=85",
+    "product_catalog_images": [
+      {
+        "id": "anora-001",
+        "title": "Royal Jaipur Block-Printed Cotton Kurti",
+        "category": "Kurtis",
+        "primary_image": "https://images.unsplash.com/photo-1645817954300-96df195432fc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjB3b21hbiUyMGx1eHVyeSUyMGt1cnRpJTIwZWRpdG9yaWFsJTIwamFpcHVyJTIwZmFzaGlvbnxlbnwwfHx8fDE3OTE1MzE2MDZ8MA&ixlib=rb-4.1.0&q=85",
+        "hover_image": "https://images.unsplash.com/photo-1626442534302-d80f26596b5f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwyfHxpbmRpYW4lMjB3b21hbiUyMGx1eHVyeSUyMGt1cnRpJTIwZWRpdG9yaWFsJTIwamFpcHVyJTIwZmFzaGlvbnxlbnwwfHx8fDE3OTE1MzE2MDZ8MA&ixlib=rb-4.1.0&q=85",
+        "price": "₹4,999"
+      },
+      {
+        "id": "anora-002",
+        "title": "Sandstone Chanderi Silk A-Line Kurta",
+        "category": "A-Line Kurtas",
+        "primary_image": "https://images.unsplash.com/photo-1654768845759-67fd2ca7c132?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHwzfHxpbmRpYW4lMjB3b21hbiUyMGx1eHVyeSUyMGt1cnRpJTIwZWRpdG9yaWFsJTIwamFpcHVyJTIwZmFzaGlvbnxlbnwwfHx8fDE3OTE1MzE2MDZ8MA&ixlib=rb-4.1.0&q=85",
+        "hover_image": "https://images.unsplash.com/photo-1659522761084-79196b64abe4?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBmYXNoaW9uJTIwbW9kZWwlMjBwb3J0cmFpdCUyMGJlaWdlJTIwYmFja2dyb3VuZCUyMGVkaXRvcmlhbHxlbnwwfHx8fDE3OTE1MzE2MDZ8MA&ixlib=rb-4.1.0&q=85",
+        "price": "₹6,499"
+      },
+      {
+        "id": "anora-003",
+        "title": "Jaipur Arch Tiered Rayon Midi Dress",
+        "category": "Dresses",
+        "primary_image": "https://images.unsplash.com/photo-1737188550231-cd8a16ec614b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwzfHxsdXh1cnklMjBmYXNoaW9uJTIwbW9kZWwlMjBwb3J0cmFpdCUyMGJlaWdlJTIwYmFja2dyb3VuZCUyMGVkaXRvcmlhbHxlbnwwfHx8fDE3OTE1MzE2MDZ8MA&ixlib=rb-4.1.0&q=85",
+        "hover_image": "https://images.unsplash.com/photo-1668952135120-7d997b1b3778?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBmYXNoaW9uJTIwbW9kZWwlMjBwb3J0cmFpdCUyMGJlaWdlJTIwYmFja2dyb3VuZCUyMGVkaXRvcmlhbHxlbnwwfHx8fDE3OTE1MzE2MDZ8MA&ixlib=rb-4.1.0&q=85",
+        "price": "₹5,299"
+      }
+    ]
+  },
+  "motion_and_micro_interactions": {
+    "transitions": "Use specific CSS transitions, avoid transition-all. Example: transition-[transform,opacity,color] duration-300 ease-out",
+    "drawer_animations": "Slide-in right for shopping bag and filter drawer using framer-motion or CSS transitions",
+    "prefers_reduced_motion": "Wrap animations with @media (prefers-reduced-motion: reduce) to disable scaling & continuous motions",
+    "hover_states": "Product image slight zoom (scale-105 duration-700), button background shift with explicit text color contrast"
+  },
+  "testing_and_accessibility": {
+    "data_testid_convention": "All interactive elements, buttons, inputs, links, filters, checkout fields, modal toggles, and admin actions MUST carry a data-testid attribute in kebab-case format.",
+    "wcag_standards": "Contrast minimums >= 4.5:1 for standard text, clear focus rings (ring-2 ring-charcoal/40), explicit label associations for inputs, semantic sectioning elements"
+  },
+  "instructions_to_main_agent": [
+    "Follow this exact color theme, typography, and component drawer structure.",
+    "Do NOT generate generic AI slop or dark high-tech templates.",
+    "Use standard JS/JSX format for components.",
+    "Ensure all testing data-testid attributes are preserved on interactive elements.",
+    "Use Sonner for toast notifications and Shadcn UI primitives wherever applicable."
+  ]
+}

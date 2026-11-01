@@ -1,0 +1,71 @@
+services:
+  - type: web
+    name: anora-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements-prod.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        value: anora
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://anora-store.onrender.com
+      - key: FRONTEND_URL
+        value: https://anora-store.onrender.com
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: TRUSTED_PROXY_CIDRS
+        value: 127.0.0.1/32,::1/128
+      - key: EMAIL_BACKEND
+        value: emergent
+      - key: EMAIL_FROM_NAME
+        value: ANORA
+      - key: EMERGENT_EMAIL_KEY
+        sync: false
+      - key: EMERGENT_LLM_KEY
+        value: ""
+      - key: APP_NAME
+        value: anora
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: RAZORPAY_MODE
+        value: test
+
+  - type: web
+    name: anora-store
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci --legacy-peer-deps && npm run build
+    staticPublishPath: build
+    envVars:
+      - key: REACT_APP_BACKEND_URL
+        value: https://anora-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin

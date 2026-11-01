@@ -1,0 +1,47 @@
+{
+  "summary": "First full test run of ANORA (React + FastAPI + MongoDB) e-commerce MVP. Backend API coverage via pytest (44 integration tests + 6 unit = 50 passed). Covered: catalog, consent/newsletter/contact, CSRF Origin guard, auth (register/login/me/logout/forgot/bcrypt), brute-force lockout, cart validation + tampering + coupon WELCOME10, checkout pending_payment flow, idempotency, verify bad-signature rejected, webhook HMAC + Mongo-level idempotency (stock & sales_count decremented once across duplicate event_id and distinct event_ids for same order), admin login/metrics/products/orders/coupons CRUD + 403/401 authorization. Frontend tested on desktop 1920x1080: homepage (hero CTAs present, Co-ord Sets & Sale hidden, Bestsellers hidden, New Arrivals shown), cookie banner + persistence, PDP add-to-bag + size-error + bag drawer + JSON-LD, invalid pincode handling, search overlay (returns 2 results for 'kurta', Escape closes), shop filter-size-M present, 404 page, admin login redirect + payments-not-configured warning, full pending_payment checkout flow (no coupon) end-to-end succeeded.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Checkout.jsx — Summary", "issue": "CRITICAL: Nested <form onSubmit={applyCoupon}> is placed INSIDE the outer <form onSubmit={place}>. Nested forms are invalid HTML; the browser flattens them. Result: clicking the coupon 'Apply' button (which lacks type='button') submits the OUTER form via default GET action → URL becomes /checkout? and the entire React component unmounts/remounts, wiping email/name/phone/address state. User who ever tries to apply a coupon must refill the entire checkout form. Repro: on /checkout fill all fields, type WELCOME10 in coupon input, click Apply → page reloads to /checkout? with empty fields and validation errors. Fix: add type=\"button\" to coupon-apply-button AND bind onClick={applyCoupon} instead of nesting a <form>, OR move the coupon <form> outside the main checkout form.", "selector": "[data-testid=\"coupon-apply-button\"]", "priority": "HIGH"},
+      {"component": "Checkout.jsx — place-order-button", "issue": "Button label reads 'Pay ₹X,XXX' even when Razorpay is not configured and the actual action is to create a pending_payment order. Misleading UX for store owner during the setup phase. Suggest conditionally rendering 'Place order (awaiting payment)' when meta.payment_configured is false.", "selector": "[data-testid=\"place-order-button\"]", "priority": "MEDIUM"},
+      {"component": "Image / preload <link>", "issue": "React dev warning: 'Invalid DOM property fetchpriority. Did you mean fetchPriority?' Appears on every page. Should be renamed to the camelCase prop fetchPriority in the component emitting <link rel=preload ... fetchpriority=...> or <img fetchpriority=...>.", "selector": "", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_api_integration.py",
+    "/app/backend/tests/test_business_logic.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "FIX CRITICAL: Resolve nested <form> inside Checkout.jsx Summary — add type=\"button\" to coupon-apply-button and convert the inner <form> to a <div> binding onClick, so applying a coupon doesn't submit the outer checkout form / reload /checkout?. This currently blocks any customer who tries to use a promo code (including WELCOME10).",
+    "Rename place-order-button label when payment_configured is false (e.g. 'Place order — awaiting payment' instead of 'Pay ₹…').",
+    "Fix React fetchpriority → fetchPriority prop warning."
+  ],
+  "critical_code_review_comments": [
+    "routes_orders.py mark_paid: Idempotent transition is correctly scoped by payment_status $ne paid; stock decrement + sales_count increment are only applied on the FIRST transition. Verified behaviour via webhook test (same order, two different event_ids → stock decremented exactly once, sales_count +1 once).",
+    "routes_catalog.py has_sales_data flag drives Bestsellers visibility — any paid order flips it. Testing agent reset is_demo products' sales_count to 0 after webhook idempotency test to keep storefront Bestsellers hidden as required.",
+    "server.py CSRF Origin middleware correctly blocks POST from foreign origins and bypasses /api/webhooks/*. Verified with 403 response from https://evil.example.com origin.",
+    "routes_auth.py brute-force uses login_attempts collection; count>=5 sets locked_until (ISO string) and returns 429. String comparison of ISO timestamps is OK for ascending format but could silently stop locking after year 9999 — currently acceptable.",
+    "Pydantic model LineIn correctly caps qty at MAX_QTY_PER_LINE (5); tampered qty=50 is rejected with 422 before pricing — good.",
+    "Checkout prices come from DB in price_cart; client-supplied price is ignored. Verified via cart/validate response unit_price matching DB.",
+    "Admin product create validates slug/sku uniqueness and compare_at_price > price. Working.",
+    "No MongoDB _id leaks observed in any public response.",
+    "Nested <form> in Checkout.jsx Summary — see UI bugs; this is the single most impactful defect found."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_api_integration.py (new, 44 tests)"
+  ],
+  "success_rate": {"backend": "100% (50/50)", "frontend": "~90% (critical nested-form coupon bug blocks the coupon flow)"},
+  "test_credentials": "Admin: admin@anora.in / Anora@Admin2026 (works). Guest checkout: used test_fe@example.com. Pytest creates throw-away test_<uuid>@example.com users and cleans up afterwards.",
+  "seed_data_creation": "Pytest run created ~6 test orders (emails prefixed 'test_'), ~3 test users, ~2 newsletter signups. All deleted by test_zz_cleanup. One frontend-created pending order ANR2610632301 (test_fe_nocoupon@example.com) still in DB — can be left or cleaned manually.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend pytest suite is in /app/backend/tests/test_api_integration.py and should run clean (50 passed). Known pending items for next pass once main agent fixes the nested-form bug: (1) re-test coupon apply + place-order flow end-to-end via UI, (2) verify sort-select 'popular' option is hidden (currently rendered via a custom shadcn Select — options couldn't be enumerated through <option> query), (3) mobile viewport 390px overflow checks and mega menu hover, (4) admin product edit UI + image upload UI, (5) wishlist login-merge, (6) password reset using logged PASSWORD_RESET_LINK token. Backend webhook test increments sales_count on a seed product — cleanup resets it; if you add more orders via UI, run `db.products.updateMany({is_demo:true},{\\$set:{sales_count:0,'sizes.$[].stock':8}})` to restore state.",
+  "rca of the issue": "Checkout.jsx line 29-36 wraps the promo-code input + Apply button in <form onSubmit={applyCoupon}>, but this Summary is already rendered inside the outer <form onSubmit={place}> on line 148. HTML forbids nested <form> elements; the browser treats the inner <form> start tag as a no-op and the Apply <button> defaults to type='submit', firing the OUTER form. Because the outer form has no action attribute, the default GET submission reloads /checkout?… wiping all React state. Mitigation: add type='button' to coupon-apply-button and change the inner <form> to <div> with an onClick (or form.onSubmit) binding; alternatively render the Summary outside the outer <form>."
+}
