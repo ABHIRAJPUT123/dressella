@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowDown, ArrowUp, ImagePlus, Plus, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, ImagePlus, Plus, Trash2, Wand2, X } from "lucide-react";
 import { api, errMsg, img, inr } from "@/lib/api";
 import { AdminH1 } from "@/admin/AdminLayout";
 
@@ -13,7 +13,7 @@ function RackRow({ it, i, n, move, remove, setImage }) {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    setBusy(true);
+    setBusy("upload");
     try {
       const fd = new FormData();
       fd.append("file", f);
@@ -22,19 +22,30 @@ function RackRow({ it, i, n, move, remove, setImage }) {
     } catch (err) { toast.error(errMsg(err)); }
     setBusy(false);
   };
+  const auto = async () => {
+    setBusy("auto");
+    try {
+      const { data } = await api.post(`/admin/rack/auto/${p.id}`, null, { timeout: 150000 });
+      setImage(data.path);
+      toast.success("Clothes-only image created — review it, then save the rack.");
+    } catch (err) { toast.error(errMsg(err)); }
+    setBusy(false);
+  };
   return (
-    <li className="flex items-center gap-4 border-b border-line py-4" data-testid={`admin-rack-item-${p.slug}`}>
+    <li className="flex flex-wrap items-center gap-3 border-b border-line py-4 sm:flex-nowrap sm:gap-4" data-testid={`admin-rack-item-${p.slug}`}>
       <span className="w-6 text-xs text-taupe">{String(i + 1).padStart(2, "0")}</span>
       <div className="h-20 w-14 shrink-0 bg-linen"><img src={img(p.images?.[0]?.path)} alt="" className="h-full w-full object-cover" /></div>
       <div className="flex h-20 w-14 shrink-0 items-center justify-center border border-dashed border-line2 bg-[repeating-conic-gradient(#f1ebe1_0_25%,#fff_0_50%)] bg-[length:12px_12px]" title="Rack image">
-        {it.image ? <img src={img(it.image)} alt="Rack garment" className="h-full w-full object-contain" /> : <span className="px-1 text-center text-[9px] text-taupe">Photo used</span>}
+        {busy === "auto" ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-line2 border-t-ink" data-testid={`admin-rack-auto-spinner-${p.slug}`} /> : it.image ? <img src={img(it.image)} alt="Rack garment" className="h-full w-full object-contain" /> : <span className="px-1 text-center text-[9px] text-taupe">Photo used</span>}
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm">{p.title}</p>
         <p className="text-xs text-taupe">{inr(p.price)} · {p.category}{p.status && p.status !== "published" ? ` · ${p.status} (hidden on store)` : ""}</p>
+        {busy === "auto" && <p className="text-xs text-cocoa">Creating clothes-only image… this takes about 20 seconds.</p>}
       </div>
       <input ref={file} type="file" accept="image/png,image/webp,image/jpeg" className="hidden" onChange={upload} data-testid={`admin-rack-file-${p.slug}`} />
-      <button type="button" className="chip h-9 gap-1.5" onClick={() => file.current?.click()} disabled={busy} data-testid={`admin-rack-upload-${p.slug}`}><ImagePlus size={14} /> {busy ? "Uploading…" : it.image ? "Replace" : "Garment image"}</button>
+      <button type="button" className="chip h-9 gap-1.5" onClick={auto} disabled={!!busy} data-testid={`admin-rack-auto-${p.slug}`}><Wand2 size={14} /> Auto cutout</button>
+      <button type="button" className="chip h-9 gap-1.5" onClick={() => file.current?.click()} disabled={!!busy} data-testid={`admin-rack-upload-${p.slug}`}><ImagePlus size={14} /> {busy === "upload" ? "Uploading…" : it.image ? "Replace" : "Upload"}</button>
       {it.image && <button type="button" className="chip h-9" onClick={() => setImage(null)} aria-label="Use product photo instead" data-testid={`admin-rack-clear-image-${p.slug}`}><X size={14} /></button>}
       <button type="button" className="chip h-9" disabled={i === 0} onClick={() => move(i, -1)} aria-label="Move up" data-testid={`admin-rack-up-${p.slug}`}><ArrowUp size={14} /></button>
       <button type="button" className="chip h-9" disabled={i === n - 1} onClick={() => move(i, 1)} aria-label="Move down" data-testid={`admin-rack-down-${p.slug}`}><ArrowDown size={14} /></button>
@@ -74,6 +85,24 @@ export default function AdminRack() {
   useEffect(() => { if (data) setItems(data.items); }, [data]);
   useEffect(() => { (items || []).forEach((x) => { if (x.image) memory.current[x.product.id] = x.image; }); }, [items]);
 
+  const sig = (xs) => JSON.stringify((xs || []).map((x) => [x.product.id, x.image || null]));
+  const dirty = !!data && !!items && sig(items) !== sig(data.items);
+  useEffect(() => {
+    if (!dirty) return undefined;
+    const msg = "You have unsaved rack changes. Leave without saving?";
+    const onUnload = (e) => { e.preventDefault(); e.returnValue = msg; return msg; };
+    const onClick = (e) => {
+      const a = e.target.closest?.("a[href]");
+      if (!a || a.target === "_blank" || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return;
+      const url = new URL(a.href, window.location.href);
+      if (url.origin === window.location.origin && url.pathname === window.location.pathname) return;
+      if (!window.confirm(msg)) { e.preventDefault(); e.stopPropagation(); }
+    };
+    window.addEventListener("beforeunload", onUnload);
+    document.addEventListener("click", onClick, true);
+    return () => { window.removeEventListener("beforeunload", onUnload); document.removeEventListener("click", onClick, true); };
+  }, [dirty]);
+
   const move = (i, d) => setItems((xs) => { const n = [...xs]; [n[i], n[i + d]] = [n[i + d], n[i]]; return n; });
   const save = async () => {
     setSaving(true);
@@ -89,7 +118,12 @@ export default function AdminRack() {
   if (isLoading || !items) return <div className="h-40 animate-pulse bg-linen" />;
   return (
     <div data-testid="admin-rack-page">
-      <AdminH1 action={<button className="btn-primary" onClick={save} disabled={saving} data-testid="admin-rack-save-button">{saving ? "Saving…" : "Save rack"}</button>}>Edit Rack</AdminH1>
+      <AdminH1 action={
+        <div className="flex items-center gap-4">
+          {dirty && <span className="flex items-center gap-2 text-xs text-cocoa" role="status" data-testid="admin-rack-unsaved"><span className="h-2 w-2 rounded-full bg-gold" />Unsaved changes</span>}
+          <button className="btn-primary" onClick={save} disabled={saving || !dirty} data-testid="admin-rack-save-button">{saving ? "Saving…" : "Save rack"}</button>
+        </div>
+      }>Edit Rack</AdminH1>
       <p className="mb-6 max-w-2xl text-sm text-taupe">
         Choose which pieces hang on the homepage rail and in what order. For the most realistic look, upload a garment-only image (no model, transparent PNG/WebP) for each piece; otherwise the product photo is used.
         {!data.configured && " The rail currently shows your newest products automatically — saving here will fix the selection."}
