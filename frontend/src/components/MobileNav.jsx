@@ -13,6 +13,7 @@ export function MobileNav({ open, onOpenChange, items, cats, cols }) {
           <SheetDescription className="sr-only">Site navigation</SheetDescription>
         </SheetHeader>
         <nav aria-label="Mobile" className="px-6 py-6">
+          <Link to={user ? "/account" : "/login"} onClick={close} className="btn-primary mb-6 w-full" data-testid="mobile-nav-signin-button">{user ? "My Account" : "Sign in / Register"}</Link>
           <ul className="space-y-1">
             {items.map((it) => (
               <li key={it.label}>

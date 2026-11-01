@@ -67,7 +67,7 @@ function MegaPanel({ kind, cats, cols, meta, close }) {
 }
 
 const IconBtn = ({ label, testid, onClick, to, children, badge }) => {
-  const cls = "relative inline-flex h-11 w-11 max-[360px]:h-9 max-[360px]:w-9 items-center justify-center text-ink transition-[opacity,transform] duration-300 hover:opacity-60";
+  const cls = "relative inline-flex h-11 w-9 sm:w-11 max-[360px]:h-9 max-[360px]:w-8 items-center justify-center text-ink transition-[opacity,transform] duration-300 hover:opacity-60";
   const inner = (<>{children}{badge > 0 && <span className="absolute right-1 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-cocoa px-1 text-[9px] font-medium text-ivory" data-testid={`${testid}-count`}>{badge}</span>}</>);
   return to ? <Link to={to} aria-label={label} className={cls} data-testid={testid}>{inner}</Link> : <button type="button" aria-label={label} onClick={onClick} className={cls} data-testid={testid}>{inner}</button>;
 };
@@ -84,14 +84,14 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-ivory/90 backdrop-blur-xl" onMouseLeave={() => setMega(null)} data-testid="site-header">
       <div className="container-luxe grid h-16 grid-cols-[1fr_auto_1fr] items-center lg:h-[76px]">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center">
           <span className="lg:hidden"><IconBtn label="Open menu" testid="mobile-menu-button" onClick={() => setMobile(true)}><Menu size={20} strokeWidth={1.4} /></IconBtn></span>
+          <span className="lg:hidden"><IconBtn label="Search" testid="header-search-button-mobile" onClick={() => setSearch(true)}><Search size={19} strokeWidth={1.4} /></IconBtn></span>
           <span className="hidden lg:inline-flex"><IconBtn label="Search" testid="header-search-button" onClick={() => setSearch(true)}><Search size={19} strokeWidth={1.4} /></IconBtn></span>
         </div>
-        <div className="flex justify-center"><Logo /></div>
+        <div className="flex justify-center px-1"><Logo /></div>
         <div className="flex items-center justify-end">
-          <span className="lg:hidden"><IconBtn label="Search" testid="header-search-button-mobile" onClick={() => setSearch(true)}><Search size={19} strokeWidth={1.4} /></IconBtn></span>
-          <span className="hidden sm:inline-flex"><IconBtn label={user ? "My account" : "Sign in"} testid="header-account-link" to={user ? "/account" : "/login"}><User size={19} strokeWidth={1.4} /></IconBtn></span>
+          <IconBtn label={user ? "My account" : "Sign in"} testid="header-account-link" to={user ? "/account" : "/login"}><User size={19} strokeWidth={1.4} /></IconBtn>
           <IconBtn label={`Wishlist, ${ids.length} items`} testid="header-wishlist-link" to="/wishlist" badge={ids.length}><Heart size={19} strokeWidth={1.4} /></IconBtn>
           <IconBtn label={`Shopping bag, ${count} items`} testid="header-bag-button" onClick={() => setOpen(true)} badge={count}><ShoppingBag size={19} strokeWidth={1.4} /></IconBtn>
         </div>
