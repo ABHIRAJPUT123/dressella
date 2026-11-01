@@ -1,0 +1,39 @@
+{
+  "summary": "Iteration 6: Tested the Edit Rack feature (backend + admin UI + homepage rack) and the regression for object-storage uploads. Backend: new pytest file test_rack_admin.py, 18/18 passed. Full suite: 120 passed, 1 skipped. Admin UI: 'Edit Rack' sits right after 'Add Stock' and opens /admin/rack with 10 items. Removing, adding back via search, reordering (up button disabled on the first row), saving (toast) and seeing the change on the homepage all work. Garment image upload works: preview shows, clear switches back to 'Photo used', and an invalid file shows an error toast. Homepage desktop: all 10 garments render as .rack-cutout with transparent webp and no broken images. Hover brings a piece forward with a caption, and clicking opens the PDP. A product without a rack image falls back to .rack-cloth. Mobile 390: touch mode, selectors 01-10, prev/next, rack-tab-* filter and tap-to-PDP all work. Add Stock image upload, shop and PDP images load. The rack is restored to the original 10-item order with the original garment image paths (checked via GET /api/rack).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "PUT /api/admin/rack", "issue": "The 'image' field is only checked with a regex. It is never checked against db.media, so an admin (or a stale client) can save a path that does not exist and the homepage shows a broken image (/api/media returns 404)."},
+      {"endpoint": "POST /api/admin/rack/upload", "issue": "Images replaced or cleared in the rack editor are never removed (left in db.media and storage). Each re-upload adds another orphan file."},
+      {"endpoint": "POST /api/admin/upload (Add Stock)", "issue": "Image.convert('RGB') on a transparent PNG turns the background black (verified with a cutout PNG, which showed a black background in the preview). It should be composited onto an ivory/white background before converting."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "Admin Edit Rack: remove then re-add", "issue": "If you remove an item and add it back before saving, it loses its garment image (it comes back with image:null and the homepage shows the model photo through .rack-cloth). Expected from the code, but easy to do by accident. Consider remembering the last image per product, or warning before saving.", "affected_selectors": ["admin-rack-remove-<slug>", "admin-rack-add-<slug>"]}
+    ],
+    "design_issues": [
+      {"screen": "Admin Edit Rack", "issues": ["No warning about unsaved changes when leaving the page after editing", "The search panel says 'No more products to add.' even when the search query simply has no matches. The two cases could use different wording."]},
+      {"screen": "Homepage rack (desktop 1920)", "issues": ["Garment cutouts take up roughly the top 60% of the rack frame, leaving a large empty band above the base bar. Consider a slightly taller cutout or a shorter frame."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_rack_admin.py", "/app/test_reports/pytest/pytest_rack.xml"],
+  "action_items": [
+    "Optional: check that rack item image paths exist in db.media inside PUT /api/admin/rack",
+    "Optional: in the Add Stock upload, composite transparent PNGs onto a light background instead of black",
+    "Optional: keep a product's garment image when it is removed and re-added in the editor, and add an unsaved-changes warning"
+  ],
+  "critical_code_review_comments": [
+    "routes_rack.py: fine overall. Auth goes through the router dependency, duplicate and unknown ids return 400, max 40 items returns 422 (Pydantic), and alpha is kept.",
+    "routes_admin.upload_image: the dimension check runs after convert() (img.format is None by then), so the check is ineffective. It should be done before decoding, as in routes_rack.",
+    "AdminRack.jsx: the search query fires on every keystroke with no debounce."
+  ],
+  "updated_files": ["/app/backend/tests/test_rack_admin.py"],
+  "success_rate": {"backend": "100% (18/18 new, 120/121 full suite incl. 1 skip)", "frontend": "100% of requested flows"},
+  "test_credentials": "admin@example.com / Dressella-b0yqcdsM90wCsXsIxh9MEqfx ; customer t1shopper1793560624@example.com / Shopper#2026pass (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Uploaded a few TEST rack and product images (orphaned in db.media, not used). No products created. Rack config restored to its original state.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "test_rack_admin.py restores the rack config at the end (module fixture). Taupe's original rack image is anora/rack/d762e010-7b5c-4663-8c49-987a37baf0fb.webp. Expected order is EXPECTED_ORDER in the test file. In the admin rack UI, a removed and re-added item loses its image, so restore through the API if you do that."
+}

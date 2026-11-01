@@ -136,7 +136,8 @@ function RackInner({ products }) {
   const step = w * 0.62;
   const track = fine ? step * (n - 1) + w : W;
   const offset = (W - track) / 2;
-  const height = Math.round(w * (fine ? 2.25 : 2.15) + 60);
+  const cutouts = products.every((p) => p.rack_image);
+  const height = Math.round(w * (fine ? (cutouts ? 1.95 : 2.25) : 2.15) + 60);
   const frameW = fine ? track + 70 : W - 16;
   const frameL = fine ? offset - 35 : 8;
   const current = fine ? hover : sel;

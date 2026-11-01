@@ -59,7 +59,7 @@ function AddProduct({ onAdd, taken }) {
             <button type="button" className="chip h-8 gap-1" onClick={() => onAdd(p)} data-testid={`admin-rack-add-${p.slug}`}><Plus size={13} /> Add</button>
           </li>
         ))}
-        {!list.length && <li className="py-3 text-xs text-taupe">No more products to add.</li>}
+        {!list.length && <li className="py-3 text-xs text-taupe">{q.trim() ? "No products match this search." : "No more products to add."}</li>}
       </ul>
     </div>
   );
@@ -70,7 +70,9 @@ export default function AdminRack() {
   const { data, isLoading } = useQuery({ queryKey: ["admin-rack"], queryFn: () => api.get("/admin/rack").then((r) => r.data) });
   const [items, setItems] = useState(null);
   const [saving, setSaving] = useState(false);
+  const memory = useRef({});
   useEffect(() => { if (data) setItems(data.items); }, [data]);
+  useEffect(() => { (items || []).forEach((x) => { if (x.image) memory.current[x.product.id] = x.image; }); }, [items]);
 
   const move = (i, d) => setItems((xs) => { const n = [...xs]; [n[i], n[i + d]] = [n[i + d], n[i]]; return n; });
   const save = async () => {
@@ -101,7 +103,7 @@ export default function AdminRack() {
           ))}
           {!items.length && <li className="py-8 text-sm text-taupe" data-testid="admin-rack-empty">The rack is empty. Add products from the right.</li>}
         </ul>
-        <AddProduct taken={new Set(items.map((x) => x.product.id))} onAdd={(p) => setItems((xs) => (xs.length >= 40 ? xs : [...xs, { product: p, image: null }]))} />
+        <AddProduct taken={new Set(items.map((x) => x.product.id))} onAdd={(p) => setItems((xs) => (xs.length >= 40 ? xs : [...xs, { product: p, image: memory.current[p.id] || null }]))} />
       </div>
     </div>
   );

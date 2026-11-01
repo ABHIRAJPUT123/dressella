@@ -65,6 +65,11 @@ async def save_rack(body: RackIn):
     missing = [i for i in ids if i not in existing]
     if missing:
         raise HTTPException(400, "One or more selected products no longer exist.")
+    paths = [i["image"] for i in items if i.get("image")]
+    if paths:
+        known = {m["path"] async for m in db.media.find({"path": {"$in": paths}, "is_deleted": False}, {"_id": 0, "path": 1})}
+        if any(p not in known for p in paths):
+            raise HTTPException(400, "One or more rack images could not be found. Please upload them again.")
     await db.settings.update_one({"key": "rack"}, {"$set": {"key": "rack", "items": items, "updated_at": now_iso()}}, upsert=True)
     return {"configured": True, "items": await _resolve(items, published_only=False)}
 

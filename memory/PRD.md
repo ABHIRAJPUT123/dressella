@@ -39,3 +39,10 @@ React SPA (Tailwind/shadcn, Cormorant Garamond + Manrope, ivory/charcoal/champag
 - Security: `.env` files git-ignored; prod-only console logging gated; no secrets in bundle.
 - Backlog: P1 clear checkout field errors on change; P1 COD order heading copy ("awaiting payment" vs "Confirmed"); P2 rack shows newest 24 products max.
 
+
+## Nov 2026 — iteration 6
+- Admin "Edit Rack" (/admin/rack, after Add Stock): add/remove/reorder rack products, upload garment-only transparent image per item. Backend `routes_rack.py`: GET /api/rack (public), GET/PUT/DELETE /api/admin/rack, POST /api/admin/rack/upload (alpha kept). Config in settings doc key "rack".
+- Rack now shows garment-only cutouts (AI ghost-mannequin + background removal) for all 10 products; sources in brand_assets/rack_cutouts/.
+- Rack category tabs, checkout inline error clearing, page fade, scroll reveal, single newsletter (footer), mobile layout fixes.
+- Env: APP_NAME=anora (media route requires anora/ prefix), object storage enabled via EMERGENT_LLM_KEY.
+- Backlog: Add Stock upload turns transparent PNG background black (pre-existing); cleanup orphan rack images; unsaved-changes warning in Edit Rack.
