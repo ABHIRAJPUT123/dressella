@@ -1,0 +1,118 @@
+{
+  "project_name": "Dressella Luxury Women's Fashion E-Commerce",
+  "archetype": "LUXURY & EDITORIAL HIGH-END BOUTIQUE",
+  "inspiration": ["Louis Vuitton", "The Collective India", "High-End Jaipur Editorial Boutiques"],
+  "typography": {
+    "headings": {
+      "family": "Cormorant Garamond, Georgia, serif",
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.15]",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-normal tracking-tight leading-snug",
+      "h3": "text-xl sm:text-2xl font-normal tracking-normal",
+      "h4": "text-lg sm:text-xl font-medium tracking-normal",
+      "eyebrow": "text-xs uppercase tracking-[0.25em] font-medium text-mute"
+    },
+    "body": {
+      "family": "Manrope, system-ui, sans-serif",
+      "size": "text-sm sm:text-base leading-relaxed text-ink/90",
+      "weights": {
+        "light": 300,
+        "regular": 400,
+        "medium": 500,
+        "semibold": 600
+      }
+    },
+    "mono": {
+      "family": "JetBrains Mono, monospace",
+      "usage": "SKUs, prices, timestamps, metric labels",
+      "class": "font-mono text-xs uppercase tracking-wider"
+    }
+  },
+  "color_palette": {
+    "primary_background": "#FDFBF7",
+    "secondary_background": "#F4EFE6",
+    "card_background": "#EAE3D9",
+    "panel_light": "#FAF6F0",
+    "text_primary": "#1A1918",
+    "text_secondary": "#6F665E",
+    "text_muted": "#8C827A",
+    "accent_gold": "#B89D66",
+    "accent_taupe": "#A38F78",
+    "accent_rosewood": "#A8706A",
+    "border_subtle": "#E6DFD5",
+    "border_strong": "#C8BDB0",
+    "rack_metal": "#1A1817",
+    "hanger_wood": "#4A3525",
+    "hanger_brass": "#C5A880"
+  },
+  "layout_and_spacing": {
+    "generous_spacing": "Use 2x-3x standard padding (py-16 to py-32 for homepage sections, p-6 to p-10 for containers)",
+    "container_max_width": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "editorial_grid": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12",
+    "bento_ratios": "Mix 3:4 portrait product cards with 16:9 full-bleed campaign banners"
+  },
+  "clothing_rack_spec": {
+    "type": "Layered photo rack with CSS 3D depth & Framer Motion",
+    "environment": {
+      "background": "Warm beige architectural panelled wall (#F4EFE6)",
+      "lighting": "Radial soft warm top spotlight (radial-gradient(#FFFBF5 0%, #EAE3D9 80%))",
+      "floor_shadow": "Diffuse ambient blur shadow below rack base",
+      "decorations": "Minimalist brass side lamp glow and botanical shadow silhouette"
+    },
+    "structure": {
+      "rack_frame": "Matte black metal double-bar architecture (#1A1817) with subtle 1px brass hardware accents",
+      "hangers": "Dark oak realistic wooden hanger silhouettes with metallic brass hooks (#C5A880)"
+    },
+    "garments": {
+      "aspect_ratio": "3:4 portrait webp model cutouts hanging seamlessly below wooden hangers",
+      "count": 10,
+      "items": [
+        "Ivory Rose A-Line Kurta",
+        "Scarlet Buti A-Line Kurta",
+        "Maroon Bloom Short Kurti",
+        "Ivory Blossom Peplum Kurti",
+        "Rust Medallion Square-Neck Tunic",
+        "Magenta Paisley Tiered Kurti",
+        "Marigold Floral Short Kurti",
+        "Olive Lotus Square-Neck Tunic",
+        "Taupe Straight Trousers",
+        "Pastel Stripe Belted Midi Dress"
+      ]
+    },
+    "desktop_behavior": {
+      "hover": "Garment scales up (1.12x), translates forward (translateZ 40px, translateY -8px), shadow-2xl elevation, z-index elevates to z-30",
+      "neighbors": "Immediate left and right adjacent garments push outward horizontally (translateX +/- 24px) creating clear breathing space",
+      "leave": "Smooth spring return to default aligned rack position",
+      "click": "Triggers quick product modal preview or navigates directly to PDP"
+    },
+    "mobile_behavior": {
+      "top_display": "Rack container with horizontal touch-scroll or snap alignment",
+      "bottom_selectors": "Numbered pill bar (01 to 10) below rack",
+      "selection": "Tapping a number highlights the garment with brass border ring, scales it up, and centers it in view; tapping garment opens product page"
+    }
+  },
+  "components": {
+    "header": {
+      "style": "Glassmorphism with backdrop-blur-md bg-[#FDFBF7]/90 border-b border-[#E6DFD5]",
+      "logo": "DRESSELLA wordmark in Cormorant Garamond font-light tracking-[0.3em] uppercase text-2xl sm:text-3xl",
+      "nav_links": ["NEW ARRIVALS", "KURTAS & TOPS", "DRESSES", "COLLECTIONS", "EDITORIAL"],
+      "actions": ["Search Overlay Trigger", "Wishlist Counter", "Bag Drawer Trigger", "Account Menu"]
+    },
+    "buttons": {
+      "primary": "bg-[#1A1918] text-[#FDFBF7] hover:bg-[#A38F78] transition-colors duration-300 rounded-none px-8 py-4 uppercase text-xs tracking-[0.2em] font-medium",
+      "secondary": "border border-[#1A1918] text-[#1A1918] bg-transparent hover:bg-[#1A1918] hover:text-[#FDFBF7] transition-all duration-300 rounded-none px-8 py-4 uppercase text-xs tracking-[0.2em] font-medium",
+      "frosted_pill": "backdrop-blur-md bg-[#FDFBF7]/80 border border-[#1A1918]/30 text-[#1A1918] hover:bg-[#1A1918] hover:text-[#FDFBF7] rounded-full px-6 py-3 text-xs tracking-[0.15em] uppercase transition-all duration-300"
+    },
+    "cards": {
+      "product_card": "Flat solid ivory container, 3:4 aspect ratio image container, dual image hover swap, quiet typography with title in Cormorant Garamond and price in Manrope font-medium"
+    },
+    "overlays": {
+      "bag_drawer": "Slide-over panel from right, bg-[#FDFBF7] with header, free shipping progress bar, items list with quantity controls, subtotal & checkout CTA",
+      "search_overlay": "Full-screen luxury search overlay with quick recommendations, recent searches, and instant live product search results"
+    }
+  },
+  "general_ui_ux_guidelines": {
+    "contrast_and_accessibility": "Ensure text contrast meets WCAG AA (minimum 4.5:1 ratio). Explicit hover state colors set.",
+    "test_id_rule": "ALL interactive components, buttons, inputs, tabs, selectors MUST have descriptive kebab-case data-testid attributes.",
+    "file_structure": "React CRA with JS/JSX files in /frontend/src and FastAPI routes in /backend."
+  }
+}
