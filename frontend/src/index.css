@@ -91,6 +91,8 @@
 .rack-floor { position: absolute; left: -100vw; right: -100vw; height: 900px; z-index: 0; pointer-events: none;
     background: linear-gradient(180deg, rgba(74, 58, 44, .22), rgba(74, 58, 44, 0) 6%), repeating-linear-gradient(90deg, rgba(74, 58, 44, .07) 0 1px, transparent 1px 120px), linear-gradient(180deg, #CDB89A, #C4AE8F 40%); }
 
+@media (max-width: 1023px) { .rack-floor { background: linear-gradient(180deg, rgba(74, 58, 44, .22), rgba(74, 58, 44, 0) 6%), linear-gradient(180deg, #CDB89A, #C4AE8F 40%); } }
+
 .rack-stage { perspective: 1600px; perspective-origin: 50% 24px; touch-action: pan-y; }
 .rack-bar { position: absolute; left: -6px; right: -6px; height: 7px; border-radius: 4px; background: linear-gradient(180deg, #4b4744 0%, #141211 45%, #050505 100%); box-shadow: 0 6px 10px -4px rgba(0, 0, 0, .45); z-index: 1; }
 .rack-base { height: 6px; }
@@ -108,6 +110,9 @@
     border-bottom-left-radius: 3px; border-bottom-right-radius: 3px; }
 .rack-cloth img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; transform: scale(1.18); transition: transform 1.2s cubic-bezier(.22, .8, .24, 1); user-select: none; }
 .rack-garment.is-active .rack-cloth img { transform: scale(1.24); }
+.rack-cutout { position: relative; z-index: 2; display: block; margin-top: -22%; aspect-ratio: 5 / 8; }
+.rack-cutout img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 0; user-select: none; transition: transform 1.2s cubic-bezier(.22, .8, .24, 1); transform-origin: 50% 0; }
+.rack-garment.is-active .rack-cutout img { transform: scale(1.03); }
 .rack-shade { position: absolute; inset: 0; pointer-events: none;
     background:
         linear-gradient(180deg, rgba(23, 21, 19, .32) 0%, rgba(23, 21, 19, 0) 13%),

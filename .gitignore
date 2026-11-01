@@ -89,3 +89,4 @@ android-sdk/
 .env
 .env.*
 !.env.example
+frontend/node_modules/.cache/default-development/5.pack

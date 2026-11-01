@@ -59,10 +59,14 @@ function Garment({ p, i, style, active, onEnter, onClick, eager }) {
       aria-label={`${p.title}, ${inr(p.price)} — view product`} data-testid={`rack-garment-${p.slug}`}>
       <span className="rack-sway" style={{ animationDelay: `${(i % 5) * -1.3}s` }}>
         <Hanger />
-        <span className="rack-cloth">
-          <img src={img(p.images?.[0]?.path)} alt="" loading={eager ? "eager" : "lazy"} decoding="async" draggable="false" />
-          <span className="rack-shade" />
-        </span>
+        {p.rack_image ? (
+          <span className="rack-cutout"><img src={img(p.rack_image)} alt="" loading={eager ? "eager" : "lazy"} decoding="async" draggable="false" /></span>
+        ) : (
+          <span className="rack-cloth">
+            <img src={img(p.images?.[0]?.path)} alt="" loading={eager ? "eager" : "lazy"} decoding="async" draggable="false" />
+            <span className="rack-shade" />
+          </span>
+        )}
         <span className="rack-tag">{String(i + 1).padStart(2, "0")}</span>
       </span>
     </Link>

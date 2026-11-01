@@ -7,8 +7,8 @@ export const FILTER_KEYS = ["category", "size", "color", "occasion", "style", "m
 
 const Group = ({ title, children }) => (
   <fieldset className="border-b border-line pb-6 pt-6 first:pt-0">
-    <legend className="eyebrow mb-4 text-ink">{title}</legend>
-    {children}
+    <legend className="eyebrow float-left mb-4 w-full text-ink">{title}</legend>
+    <div className="clear-both">{children}</div>
   </fieldset>
 );
 

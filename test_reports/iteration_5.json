@@ -1,0 +1,42 @@
+{
+  "summary": "Frontend-only test of iteration-5 requests on desktop 1920x1080, tablet 768x1024 and mobile 390x844 / 360x740. Rack category tabs: PASS. Tabs: All 10, Dresses 1, Kurtas 2, Tops & Short Kurtis 6, Trousers 1. Garment and selector counts match each tab on desktop (hover mode) and mobile (touch mode). Desktop hover goes to the product page and mobile selectors and next work after filtering. On mobile the tabs scroll sideways (scrollWidth 710, clientWidth 390) and the page width stays at 390. Checkout inline errors: PASS. Each field's error clears as soon as the field is valid, the other errors stay, and 'Please correct the highlighted fields.' goes away once all fields are fixed. A guest COD order was placed and the order page loads. Page fade: PASS. Opacity sampled 0 -> 0.37 -> 0.63 -> 1 on shop->product, and every page ends at opacity 1. Newsletter: PASS. No home-newsletter and no nl-main-form; exactly one nl-footer-form; 'The DRESSELLA letter' appears once; footer input background is transparent. Mobile sweep: 17 pages at 3 viewports, plus account, checkout and wishlist while logged in, and the order page. No horizontal scroll and nothing stuck at opacity 0. The announcement bar is one line (34-36px, ellipsis). The footer ends the page with no blank space after it. Found and fixed 5 CSS issues (see updated_files).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Home showroom panels (mobile/tablet)", "issue": "FIXED: the showroom-panel spans were NOT hidden below lg (no hidden/lg:block class and no media query), so their bordered frames drew lines through the rail heading and text on mobile.", "selector": ".showroom-panel", "priority": "HIGH"},
+      {"component": "Rack floor (mobile/tablet)", "issue": "FIXED: the 900px .rack-floor has vertical plank lines (repeating-linear-gradient). The rack caption 'No. 01 / 10', the title and the selectors sit on the floor, so vertical lines crossed the text on mobile. Plank lines are now removed below 1024px; the plain floor gradient stays.", "selector": ".rack-floor", "priority": "HIGH"},
+      {"component": "FilterPanel fieldset/legend (shop desktop sidebar + mobile filter sheet)", "issue": "FIXED: a <legend> inside a fieldset with pt-6 sat right under the previous group's divider (about 7px gap), with a big gap below it. Text looked squeezed between lines. Legend is now float-left w-full and the children are wrapped in clear-both, so spacing is balanced.", "selector": "[data-testid=filter-panel] legend", "priority": "MEDIUM"},
+      {"component": "Header 'Sign in' label at 360px", "issue": "FIXED: 'Sign in' wrapped onto 2 lines at 360px. Added whitespace-nowrap; it is one line at 360, 375 and 390.", "selector": "[data-testid=header-signin-label]", "priority": "MEDIUM"},
+      {"component": "Home brand story -> footer", "issue": "FIXED (reduced): there was about 160px (mobile) to 240px (desktop) of empty black between the brand story's 'Our story' button and the footer, because two ink sections each had large padding. Brand story bottom padding is now pb-6/sm:pb-10.", "selector": "[data-testid=home-brand-story]", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home rail (desktop >=1024)", "issues": ["Showroom panels (top 8%, width 26%) still sit behind the rail heading: the left panel frame overlaps the eyebrow and 'Step into the wardrobe', and the right panel's vertical border cuts through the description paragraph at 1920px. Suggest starting the panels below the heading block (e.g. top: ~300px) or putting them only behind the rack stage."]},
+      {"screen": "Home collections carousel (mobile)", "issues": ["snap-start without scroll padding: after swiping, a card snaps flush to x=0, ignoring the 20px gutter. Add scroll-px-5 to the scroller."]},
+      {"screen": "Rack caption (mobile)", "issues": ["'No. 01 / 10' (text-umber/taupe on the tan floor) has low contrast.", "With 6 items the selectors wrap 5+1 and leave a lone '06'. Minor."]},
+      {"screen": "Account tabs / Size guide table (mobile)", "issues": ["Account tabs and the size-guide table scroll sideways, with text cut at the right edge ('ADDRES', 'HIP ('). No page overflow, but there is no fade or scroll hint."]}
+    ]
+  },
+  "test_report_links": ["/app/tests/mobile_sweep_snippet.py"],
+  "action_items": [
+    "Desktop: move or shrink .showroom-panel so its borders do not cross the rail heading or description text.",
+    "Add scroll-px-5 (scroll-padding) to the home collections snap carousel.",
+    "Optional: raise contrast of the rack caption number on the floor; add a fade or scroll hint on the horizontally scrolling account tabs and size table."
+  ],
+  "critical_code_review_comments": [
+    "Home.jsx Rail: ClothingRack is wrapped in key={cat} page-fade, so every tab change remounts it and resets the selection. This is intended, but the ResizeObserver width starts at 0, so the rack renders blank for a frame. Acceptable.",
+    "The request said the showroom panels were 'hidden below lg', but the code did not do it. The tester has now done it."
+  ],
+  "updated_files": [
+    "/app/frontend/src/pages/Home.jsx (showroom-panel hidden lg:block; brand-story bottom padding reduced)",
+    "/app/frontend/src/index.css (@media max-width:1023px .rack-floor without plank lines)",
+    "/app/frontend/src/components/FilterPanel.jsx (legend float-left w-full + clear-both wrapper)",
+    "/app/frontend/src/components/Header.jsx (whitespace-nowrap on header-signin-label)",
+    "/app/tests/mobile_sweep_snippet.py (reusable metrics JS)"
+  ],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "95% (all requested features pass; 5 CSS glitches fixed by tester; 4 minor design notes open)"},
+  "seed_data_creation": "Placed 1 guest COD order (TEST_guest@example.com, 'TEST Guest') and 1 cart item for the testing customer (not ordered).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Dismiss cookie banner with 'Reject non-essential'. Error testids are `${id}-error` (checkout-email-error, ship-phone-error, ...). AddressForm testids: ship-{name,phone,line1,city,pincode}-input, ship-state-select. Product-card links: the first a[href^=/product/] is tabindex=-1 and hidden; use a:not([tabindex=\"-1\"]). For the sweep, load /app/tests/mobile_sweep_snippet.py via exec(open(...).read(), ns) and evaluate ns['METRICS_JS']. Opacity-0 IMG elements on the shop/home/PDP grids are product-card hover images (expected). 2 unrevealed .reveal items on mobile home are off-screen horizontal collection cards (they reveal on swipe)."
+}

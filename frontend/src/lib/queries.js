@@ -3,6 +3,8 @@ import { api } from "@/lib/api";
 
 export const useMeta = () => useQuery({ queryKey: ["meta"], queryFn: () => api.get("/catalog/meta").then((r) => r.data), staleTime: 60000 });
 
+export const useRack = () => useQuery({ queryKey: ["rack"], queryFn: () => api.get("/rack").then((r) => r.data.items.map((i) => ({ ...i.product, rack_image: i.image }))), staleTime: 60000 });
+
 export const useProducts = (params) =>
   useQuery({ queryKey: ["products", params], queryFn: () => api.get("/products", { params }).then((r) => r.data), placeholderData: keepPreviousData });
 

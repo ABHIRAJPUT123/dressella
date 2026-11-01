@@ -1,5 +1,5 @@
 import { NavLink, Navigate, Outlet, Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Package, PackagePlus, ShoppingCart, Tag, Users, Mail, FileText, ExternalLink, Send, RefreshCw } from "lucide-react";
+import { LayoutDashboard, Package, PackagePlus, ShoppingCart, Tag, Users, Mail, FileText, ExternalLink, Send, RefreshCw, Shirt } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useSeo } from "@/lib/seo";
 
@@ -14,6 +14,7 @@ const NAV = [
   ["/admin/newsletter", "Newsletter", Mail],
   ["/admin/content", "Content & Pages", FileText],
   ["/admin/products/new", "Add Stock", PackagePlus, true],
+  ["/admin/rack", "Edit Rack", Shirt],
 ];
 
 export const AdminH1 = ({ children, action }) => (

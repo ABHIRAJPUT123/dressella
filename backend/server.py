@@ -16,6 +16,7 @@ from routes_orders import router as orders_router
 from routes_account import router as account_router
 from routes_admin import router as admin_router
 from routes_exchanges import customer_router as exchange_customer_router, admin_router as exchange_admin_router
+from routes_rack import public_router as rack_router, admin_router as rack_admin_router
 
 app = FastAPI(
     title="DRESSELLA API",
@@ -32,7 +33,7 @@ MAX_EXCHANGE_BODY = 3 * 1024 * 1024
 @app.middleware("http")
 async def guard(request: Request, call_next):
     cl = int(request.headers.get("content-length") or 0)
-    limit = MAX_UPLOAD_BODY if request.url.path.endswith("/admin/upload") else MAX_EXCHANGE_BODY if request.url.path == "/api/exchanges" else MAX_BODY
+    limit = MAX_UPLOAD_BODY if request.url.path.endswith(("/admin/upload", "/admin/rack/upload")) else MAX_EXCHANGE_BODY if request.url.path == "/api/exchanges" else MAX_BODY
     if cl > limit:
         return JSONResponse({"detail": "Request too large"}, status_code=413)
     # CSRF defence for cookie auth: unsafe browser requests must come from an allowed origin.
@@ -75,6 +76,8 @@ app.include_router(account_router)
 app.include_router(admin_router)
 app.include_router(exchange_customer_router)
 app.include_router(exchange_admin_router)
+app.include_router(rack_router)
+app.include_router(rack_admin_router)
 
 
 @app.get("/api/health")

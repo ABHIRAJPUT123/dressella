@@ -30,6 +30,7 @@ const AdminCustomers = lazy(() => import("@/admin/AdminMisc").then((m) => ({ def
 const AdminNewsletter = lazy(() => import("@/admin/AdminMisc").then((m) => ({ default: m.AdminNewsletter })));
 const AdminContent = lazy(() => import("@/admin/AdminContent"));
 const AdminExchanges = lazy(() => import("@/admin/AdminExchanges"));
+const AdminRack = lazy(() => import("@/admin/AdminRack"));
 
 const Fallback = () => <div className="container-luxe py-24" aria-busy="true"><div className="h-8 w-1/3 animate-pulse bg-linen" /></div>;
 
@@ -80,6 +81,7 @@ export default function App() {
                       <Route path="customers" element={<AdminCustomers />} />
                       <Route path="newsletter" element={<AdminNewsletter />} />
                       <Route path="content" element={<AdminContent />} />
+                      <Route path="rack" element={<AdminRack />} />
                     </Route>
                   </Routes>
                 </Suspense>

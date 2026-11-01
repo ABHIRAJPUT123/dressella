@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowDown } from "lucide-react";
-import { useMeta, useProducts } from "@/lib/queries";
+import { useMeta, useProducts, useRack } from "@/lib/queries";
 import { img } from "@/lib/api";
 import { useSeo } from "@/lib/seo";
 import { ProductGrid } from "@/components/ProductCard";
@@ -60,8 +60,8 @@ function Rail({ products, loading, cats }) {
   const shown = cat === "all" ? products : products.filter((p) => p.category === cat);
   return (
     <section id="the-rail" className="showroom relative overflow-hidden py-16 sm:py-24" data-testid="home-rack-section">
-      <span className="showroom-panel left-[4%] w-[26%]" aria-hidden="true" />
-      <span className="showroom-panel right-[4%] w-[26%]" aria-hidden="true" />
+      <span className="showroom-panel hidden left-[4%] w-[26%] lg:block" aria-hidden="true" />
+      <span className="showroom-panel hidden right-[4%] w-[26%] lg:block" aria-hidden="true" />
       <div className="container-luxe relative">
         <div className="reveal mb-10 grid gap-6 sm:mb-12 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
@@ -170,6 +170,7 @@ export default function Home() {
   const { data: meta } = useMeta();
   const { data: latest, isLoading, isError, refetch } = useProducts({ sort: "newest", limit: 24 });
   const best = useProducts({ sort: "popular", limit: 4 });
+  const rack = useRack();
   useSeo({ title: null, description: "DRESSELLA — premium women's fashion rooted in Jaipur. Shop A-line kurtas, short kurtis, dresses and trousers in pure cotton and rayon, delivered across India.", path: "/" });
   const all = latest?.items || [];
   const s = meta?.settings || {};
@@ -180,7 +181,7 @@ export default function Home() {
   return (
     <div data-testid="home-page">
       <Hero hero={s.hero} />
-      {!isError && <Rail products={all} loading={isLoading} cats={cats} />}
+      {!isError && <Rail products={rack.data || []} loading={rack.isLoading} cats={cats} />}
       <Marquee words={[...cats.map((c) => c.name), ...cols.map((c) => c.name)]} />
       <section className="container-luxe grid gap-8 py-20 sm:py-32 lg:grid-cols-12" data-testid="home-manifesto">
         <p className="reveal eyebrow lg:col-span-3">DRESSELLA — Fashion for her</p>
@@ -206,7 +207,7 @@ export default function Home() {
       <Collections cols={cols} products={all} />
       {(s.editorials || []).slice(1).map((e, i) => <div key={e.link || e.title} className="py-20 sm:py-32"><Editorial e={e} i={i + 1} flip /></div>)}
       <section className="relative overflow-hidden bg-ink text-ivory" data-testid="home-brand-story">
-        <div className="container-luxe grid items-center gap-12 py-20 sm:py-32 lg:grid-cols-12">
+        <div className="container-luxe grid items-center gap-12 pb-6 pt-20 sm:pb-10 sm:pt-32 lg:grid-cols-12">
           <div className="reveal-img reveal relative lg:col-span-5">
             {story && <div className="aspect-[3/4] overflow-hidden"><img src={img(story.images?.[2]?.path_lg || story.images?.[0]?.path_lg)} alt="DRESSELLA pastel stripe midi dress" loading="lazy" className="h-full w-full object-cover" /></div>}
             <span className="pointer-events-none absolute -bottom-6 -right-4 hidden border border-champagne/40 lg:block" style={{ inset: "24px -24px -24px 24px" }} aria-hidden="true" />
