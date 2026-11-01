@@ -155,7 +155,10 @@ def _key_out_green(raw):
     for y in range(h):
         for x in range(w):
             r, g, b, a = px[x, y]
-            if a and g > max(r, b) + 25:
+            if not a or g <= max(r, b) + 25:
+                continue
+            near = any(0 <= x + dx < w and 0 <= y + dy < h and px[x + dx, y + dy][3] == 0 for dx in (-2, 0, 2) for dy in (-2, 0, 2))
+            if near:
                 px[x, y] = (r, max(r, b), b, a)
     bbox = img.getchannel("A").point(lambda a: 255 if a > 20 else 0).getbbox()
     if not bbox or (bbox[2] - bbox[0]) * (bbox[3] - bbox[1]) < 0.05 * w * h:

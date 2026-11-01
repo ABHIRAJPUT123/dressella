@@ -121,11 +121,11 @@ export default function AdminRack() {
       <AdminH1 action={
         <div className="flex items-center gap-4">
           {dirty && <span className="flex items-center gap-2 text-xs text-cocoa" role="status" data-testid="admin-rack-unsaved"><span className="h-2 w-2 rounded-full bg-gold" />Unsaved changes</span>}
-          <button className="btn-primary" onClick={save} disabled={saving || !dirty} data-testid="admin-rack-save-button">{saving ? "Saving…" : "Save rack"}</button>
+          <button className="btn-primary" onClick={save} disabled={saving || (!dirty && data.configured)} data-testid="admin-rack-save-button">{saving ? "Saving…" : "Save rack"}</button>
         </div>
       }>Edit Rack</AdminH1>
       <p className="mb-6 max-w-2xl text-sm text-taupe">
-        Choose which pieces hang on the homepage rail and in what order. For the most realistic look, upload a garment-only image (no model, transparent PNG/WebP) for each piece; otherwise the product photo is used.
+        Choose which pieces hang on the homepage rail and in what order. For the most realistic look, every piece should show only the clothes: press "Auto cutout" to create a clothes-only image from the product photo automatically, or upload your own (transparent PNG/WebP). Without one, the product photo is used.
         {!data.configured && " The rail currently shows your newest products automatically — saving here will fix the selection."}
       </p>
       <div className="grid gap-8 xl:grid-cols-[1fr_340px]">

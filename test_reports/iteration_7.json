@@ -1,0 +1,50 @@
+{
+  "summary": "Iteration 7: tested (1) Add Stock transparent upload -> ivory background, (2) Edit Rack Auto cutout (Gemini + green keying), (3) Edit Rack unsaved-changes warning, plus regressions. Backend: 9/9 new tests pass (test_upload_autocutout.py) + 18/18 test_rack_admin.py regression. Frontend: every requested flow passed. Used exactly 2 AI calls (1 API, 1 UI), both on olive-lotus-square-neck-tunic, and both returned a clean clothes-only RGBA cutout. Restored the rack to the exact original 10 items/paths via PUT, which was verified equal. The draft test product was created and then deleted (0 left).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "routes_rack._key_out_green", "issue": "The despill loop (lines 155-159) clamps green on EVERY opaque pixel where g > max(r,b)+25, not only on edge or spill pixels. A truly green garment (emerald or bottle-green kurta) would be turned grey or olive. Olive passed because its g-max(r,b) is small. Limit despill to pixels next to keyed-out pixels, or to low-alpha fringe pixels."},
+      {"endpoint": "POST /api/admin/upload", "issue": "The check `img.format not in (None,) and w*h > 40MP` runs after convert(), when format is always None, so the 40MP limit never applies (dead code). Check size before converting, as routes_rack.upload_rack_image does."},
+      {"endpoint": "POST /api/admin/rack/auto/{id}", "issue": "Every auto cutout writes a media record and object even when the rack is never saved, so unused images pile up. Consider cleanup or tagging them as unsaved drafts."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "AdminRack Save button", "issue": "Save is disabled whenever the page is not dirty, even when the rack is NOT configured (data.configured=false). The page text says 'saving here will fix the selection', but the admin cannot save the default list without making a dummy change first. Fix: disabled={saving || (data.configured && !dirty)}", "selector": "[data-testid='admin-rack-save-button']", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Edit Rack unsaved guard", "issues": ["Only <a href> clicks and beforeunload are guarded. Browser Back/Forward (popstate) and the 'Sign out' button leave without a prompt. Optional: use a react-router blocker."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_upload_autocutout.py", "/app/backend/tests/test_rack_admin.py", "/app/test_reports/pytest/pytest_iter7.xml"],
+  "action_items": [
+    "Limit green despill in _key_out_green to fringe pixels so green garments keep their colour",
+    "Allow Save when the rack is unconfigured even if not dirty (matches the spec: disabled only when configured and not dirty)",
+    "Move the 40MP dimension check in upload_image before convert() (it is currently dead code)",
+    "Optional: guard browser back (popstate) and Sign out when there are unsaved changes; clean up unsaved auto-cutout media"
+  ],
+  "critical_code_review_comments": [
+    "upload_image alpha composite is correct: RGBA/LA/PA/P+transparency are composited on (251,248,242). Corners measured ivory on both path and path_lg; a palette PNG with transparency also gives ivory; JPEG colour is preserved.",
+    "auto_cutout: auth guard via router dependency is OK (guest/customer 401/403), unknown product gives 404, and AI exceptions map to 502 with a friendly message.",
+    "_key_out_green despill is applied globally (see backend minor issue)."
+  ],
+  "verified_passing": [
+    "POST /api/admin/upload with transparent PNG -> RGB WebP, 4 corners ~ (251,248,242) for path and path_lg",
+    "JPEG upload unchanged; invalid file gives 400; customer gives 401/403",
+    "POST /api/admin/rack/auto: guest and customer 401/403, unknown product 404; real call returned anora/rack/<id>.webp in ~17s; media is RGBA with transparent corners and the garment only (no person); rack config unchanged until Save",
+    "UI: 10 rows each with admin-rack-auto-<slug>; clicking shows spinner + 'Creating clothes-only image… this takes about 20 seconds.'; Auto and Upload are disabled while busy; preview src changes; success toast shown; unsaved indicator appears and Save is enabled",
+    "Unsaved: clean configured rack -> no indicator, Save disabled; move down -> dirty; moving back -> clean again; remove -> dirty",
+    "Clicking Orders while dirty -> confirm dialog. Dismiss keeps you on /admin/rack with state intact; accept navigates to /admin/orders. Reload while dirty triggers beforeunload",
+    "After Save: indicator gone, Save disabled, 'Rack saved' toast; navigating to Orders gives no prompt",
+    "Add Stock: transparent PNG preview shows an ivory background; draft product saved and then deleted",
+    "Homepage rack shows 10 /rack/ cutout images; public /api/rack configured with 10 items, all with images"
+  ],
+  "updated_files": ["/app/backend/tests/test_upload_autocutout.py"],
+  "success_rate": {"backend": "100%", "frontend": "100% of requested flows (1 low-priority spec deviation: Save disabled on unconfigured rack)"},
+  "test_credentials": "From /app/memory/test_credentials.md: admin@example.com / Dressella-b0yqcdsM90wCsXsIxh9MEqfx; customer t1shopper1793560624@example.com / Shopper#2026pass",
+  "seed_data_creation": "No persistent data. Uploaded test media (products/*.webp, 1 extra rack webp from the UI auto cutout) remain as unreferenced media. The rack is restored to the original paths.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "test_upload_autocutout.py skips the real AI test unless RUN_AI_CUTOUT=1 (costs credits). Original rack paths: olive = anora/rack/d386fd21-...webp etc. (see GET /api/admin/rack). pytest.ini uses xdist (-n); do not pass -p no:xdist. Dismiss the cookie banner with data-testid=cookie-reject-button. Admin nav testids: admin-nav-orders, admin-nav-add (Add Stock), admin-nav-edit (Edit Rack)."
+}

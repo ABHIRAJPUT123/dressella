@@ -202,12 +202,16 @@ async def upload_image(file: UploadFile = File(...)):
         img = Image.open(io.BytesIO(data))
         img.verify()
         img = Image.open(io.BytesIO(data))
+        if img.width * img.height > 40_000_000:
+            raise HTTPException(400, "Image dimensions too large.")
         if img.mode in ("RGBA", "LA", "PA") or (img.mode == "P" and "transparency" in img.info):
             rgba = img.convert("RGBA")
             bg = Image.new("RGBA", rgba.size, (251, 248, 242, 255))
             img = Image.alpha_composite(bg, rgba).convert("RGB")
         else:
             img = img.convert("RGB")
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(400, "Please upload a valid JPG, PNG or WebP image.")
     if img.format not in (None,) and img.width * img.height > 40_000_000:
