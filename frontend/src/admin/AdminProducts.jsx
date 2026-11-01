@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowUp, Trash2, Upload } from "lucide-react";
@@ -47,6 +47,8 @@ const F = ({ label, children }) => <label className="block"><span className="lab
 export function AdminProductEdit() {
   const { id } = useParams();
   const isNew = id === "new";
+  const [params] = useSearchParams();
+  const toRack = isNew && params.get("to_rack") === "1";
   const nav = useNavigate();
   const qc = useQueryClient();
   const [p, setP] = useState(isNew ? BLANK : null);
@@ -89,6 +91,20 @@ export function AdminProductEdit() {
     ["id", "sales_count", "is_demo", "created_at", "updated_at"].forEach((k) => delete body[k]);
     try {
       const { data } = isNew ? await api.post("/admin/products", body) : await api.put(`/admin/products/${id}`, body);
+      if (isNew && toRack) {
+        try {
+          await api.post("/admin/rack/items", { product_id: data.id });
+          toast.success("New cloth saved and hung on the rack.");
+          qc.invalidateQueries();
+          nav("/admin/rack", { replace: true });
+        } catch (e3) {
+          toast.error(`Product saved, but not added to the rack: ${errMsg(e3)}`);
+          qc.invalidateQueries();
+          nav(`/admin/products/${data.id}`, { replace: true });
+        }
+        setBusy(false);
+        return;
+      }
       toast.success("Product saved"); qc.invalidateQueries(); if (isNew) nav(`/admin/products/${data.id}`, { replace: true });
     } catch (e2) { setErr(errMsg(e2)); }
     setBusy(false);
@@ -100,8 +116,9 @@ export function AdminProductEdit() {
 
   return (
     <div data-testid="admin-product-edit">
-      <Link to="/admin/products" className="mb-4 inline-flex items-center gap-2 text-xs"><ArrowLeft size={14} /> Products</Link>
-      <AdminH1 action={<div className="flex gap-3">{!isNew && <button className="btn-outline" onClick={del} data-testid="admin-delete-product-button">Delete</button>}<button className="btn-primary" onClick={save} disabled={busy || uploading} data-testid="admin-save-product-button">{uploading ? "Uploading photos…" : busy ? "Saving…" : "Save"}</button></div>}>{isNew ? "New product" : p.title}</AdminH1>
+      <Link to={toRack ? "/admin/rack" : "/admin/products"} className="mb-4 inline-flex items-center gap-2 text-xs"><ArrowLeft size={14} /> {toRack ? "Edit Rack" : "Products"}</Link>
+      <AdminH1 action={<div className="flex gap-3">{!isNew && <button className="btn-outline" onClick={del} data-testid="admin-delete-product-button">Delete</button>}<button className="btn-primary" onClick={save} disabled={busy || uploading} data-testid="admin-save-product-button">{uploading ? "Uploading photos…" : busy ? "Saving…" : toRack ? "Save & hang on rack" : "Save"}</button></div>}>{toRack ? "New cloth for the rack" : isNew ? "New product" : p.title}</AdminH1>
+      {toRack && <p className="mb-6 border-l-2 border-gold bg-ivory p-3 text-xs" data-testid="admin-product-to-rack-note">This cloth will be saved as a product and hung on the homepage rack (max 7 pieces). Fill in the name, category, price, sizes with stock, description and photos. Choose <b>Published</b> so it appears on the store and the rack. After saving you can press "Auto cutout" in Edit Rack for a clothes-only image.</p>}
       {p.is_demo && <p className="mb-6 border-l-2 border-gold bg-ivory p-3 text-xs">DEMO product — price and stock are placeholders. Confirm real values before launch.</p>}
       {isNew && <p className="mb-6 border-l-2 border-line2 bg-ivory p-3 text-xs text-taupe">Add the product details, prices, sizes, stock and photos below. Choose Published to list it on the storefront; Draft products stay hidden.</p>}
       {err && <p role="alert" className="mb-6 text-sm text-destructive" data-testid="admin-product-error">{err}</p>}

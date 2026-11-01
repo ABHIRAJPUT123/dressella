@@ -14,9 +14,9 @@ from routes_catalog import LIST_FIELDS, media, present
 public_router = APIRouter(prefix="/api", tags=["rack"])
 admin_router = APIRouter(prefix="/api/admin/rack", tags=["admin-rack"], dependencies=[Depends(require_admin)])
 
-MAX_ITEMS = 40
+MAX_ITEMS = 7
 MAX_UPLOAD = 8 * 1024 * 1024
-DEFAULT_COUNT = 24
+DEFAULT_COUNT = 7
 
 
 class RackItemIn(BaseModel):
@@ -48,7 +48,28 @@ async def public_rack():
     if items is None:
         cur = db.products.find({"status": "published"}, LIST_FIELDS).sort("created_at", -1).limit(DEFAULT_COUNT)
         return {"configured": False, "items": [{"product": present(p), "image": None} async for p in cur]}
-    return {"configured": True, "items": await _resolve(items)}
+    return {"configured": True, "items": (await _resolve(items))[:MAX_ITEMS]}
+
+
+class RackAddIn(BaseModel):
+    product_id: str = Field(min_length=1, max_length=64)
+
+
+@admin_router.post("/items")
+async def add_rack_item(body: RackAddIn):
+    if not await db.products.find_one({"id": body.product_id}, {"_id": 1}):
+        raise HTTPException(404, "Product not found.")
+    items = await _config()
+    if items is None:
+        cur = db.products.find({"status": "published", "id": {"$ne": body.product_id}}, {"_id": 0, "id": 1}).sort("created_at", -1).limit(MAX_ITEMS - 1)
+        items = [{"product_id": p["id"], "image": None} async for p in cur]
+    if any(i["product_id"] == body.product_id for i in items):
+        raise HTTPException(400, "This piece is already on the rack.")
+    if len(items) >= MAX_ITEMS:
+        raise HTTPException(400, f"The rack can hold only {MAX_ITEMS} pieces. Remove one in Edit Rack first.")
+    items = items + [{"product_id": body.product_id, "image": None}]
+    await db.settings.update_one({"key": "rack"}, {"$set": {"key": "rack", "items": items, "updated_at": now_iso()}}, upsert=True)
+    return {"configured": True, "count": len(items)}
 
 
 @admin_router.get("")

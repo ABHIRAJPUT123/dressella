@@ -4,6 +4,9 @@ import { toast } from "sonner";
 import { ArrowDown, ArrowUp, ImagePlus, Plus, Trash2, Wand2, X } from "lucide-react";
 import { api, errMsg, img, inr } from "@/lib/api";
 import { AdminH1 } from "@/admin/AdminLayout";
+import { Link } from "react-router-dom";
+
+const MAX = 7;
 
 function RackRow({ it, i, n, move, remove, setImage }) {
   const file = useRef(null);
@@ -54,20 +57,21 @@ function RackRow({ it, i, n, move, remove, setImage }) {
   );
 }
 
-function AddProduct({ onAdd, taken }) {
+function AddProduct({ onAdd, taken, full }) {
   const [q, setQ] = useState("");
   const { data } = useQuery({ queryKey: ["admin-rack-search", q], queryFn: () => api.get("/admin/products", { params: { q, limit: 12 } }).then((r) => r.data) });
   const list = (data?.items || []).filter((p) => !taken.has(p.id));
   return (
     <div className="border border-line bg-ivory p-5" data-testid="admin-rack-add">
-      <p className="label-luxe">Add a product to the rack</p>
+      <p className="label-luxe">Add an existing product</p>
+      {full && <p className="mb-3 text-xs text-cocoa" data-testid="admin-rack-full-note">The rack is full ({MAX} pieces). Remove one to add another.</p>}
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name or SKU" className="input-luxe h-10" data-testid="admin-rack-search-input" />
       <ul className="mt-3 max-h-72 divide-y divide-line overflow-y-auto">
         {list.map((p) => (
           <li key={p.id} className="flex items-center gap-3 py-2">
             <div className="h-12 w-9 shrink-0 bg-linen"><img src={img(p.images?.[0]?.path)} alt="" className="h-full w-full object-cover" /></div>
             <span className="min-w-0 flex-1 truncate text-sm">{p.title}</span>
-            <button type="button" className="chip h-8 gap-1" onClick={() => onAdd(p)} data-testid={`admin-rack-add-${p.slug}`}><Plus size={13} /> Add</button>
+            <button type="button" className="chip h-8 gap-1" onClick={() => onAdd(p)} disabled={full} data-testid={`admin-rack-add-${p.slug}`}><Plus size={13} /> Add</button>
           </li>
         ))}
         {!list.length && <li className="py-3 text-xs text-taupe">{q.trim() ? "No products match this search." : "No more products to add."}</li>}
@@ -116,16 +120,22 @@ export default function AdminRack() {
   };
 
   if (isLoading || !items) return <div className="h-40 animate-pulse bg-linen" />;
+  const full = items.length >= MAX;
+  const over = items.length > MAX;
   return (
     <div data-testid="admin-rack-page">
       <AdminH1 action={
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           {dirty && <span className="flex items-center gap-2 text-xs text-cocoa" role="status" data-testid="admin-rack-unsaved"><span className="h-2 w-2 rounded-full bg-gold" />Unsaved changes</span>}
-          <button className="btn-primary" onClick={save} disabled={saving || (!dirty && data.configured)} data-testid="admin-rack-save-button">{saving ? "Saving…" : "Save rack"}</button>
+          {full ? <span className="btn-outline cursor-not-allowed opacity-40" title={`The rack holds ${MAX} pieces — remove one first`} data-testid="admin-rack-new-cloth-disabled"><Plus size={14} /> Add new cloth</span>
+            : <Link to="/admin/products/new?to_rack=1" className="btn-outline" data-testid="admin-rack-new-cloth-button"><Plus size={14} /> Add new cloth</Link>}
+          <button className="btn-primary" onClick={save} disabled={saving || over || (!dirty && data.configured)} data-testid="admin-rack-save-button">{saving ? "Saving…" : "Save rack"}</button>
         </div>
       }>Edit Rack</AdminH1>
+      <p className="mb-3 text-sm" data-testid="admin-rack-count"><b>{items.length} / {MAX}</b> pieces on the rack</p>
+      {over && <p role="alert" className="mb-4 border-l-2 border-destructive bg-ivory p-3 text-sm text-destructive" data-testid="admin-rack-over-limit">The rack can hold only {MAX} pieces. Remove {items.length - MAX} to save — until then the homepage shows the first {MAX}.</p>}
       <p className="mb-6 max-w-2xl text-sm text-taupe">
-        Choose which pieces hang on the homepage rail and in what order. For the most realistic look, every piece should show only the clothes: press "Auto cutout" to create a clothes-only image from the product photo automatically, or upload your own (transparent PNG/WebP). Without one, the product photo is used.
+        Choose which pieces hang on the homepage rail and in what order. Use "Add new cloth" to create a brand-new piece with all its details (name, price, sizes, stock, photos) and hang it straight on the rack, or add an existing product from the right. For the most realistic look, press "Auto cutout" so only the clothes show, or upload your own transparent PNG/WebP.
         {!data.configured && " The rail currently shows your newest products automatically — saving here will fix the selection."}
       </p>
       <div className="grid gap-8 xl:grid-cols-[1fr_340px]">
@@ -135,9 +145,9 @@ export default function AdminRack() {
               remove={() => setItems((xs) => xs.filter((x) => x.product.id !== it.product.id))}
               setImage={(path) => setItems((xs) => xs.map((x) => (x.product.id === it.product.id ? { ...x, image: path } : x)))} />
           ))}
-          {!items.length && <li className="py-8 text-sm text-taupe" data-testid="admin-rack-empty">The rack is empty. Add products from the right.</li>}
+          {!items.length && <li className="py-8 text-sm text-taupe" data-testid="admin-rack-empty">The rack is empty. Add new cloth or add products from the right.</li>}
         </ul>
-        <AddProduct taken={new Set(items.map((x) => x.product.id))} onAdd={(p) => setItems((xs) => (xs.length >= 40 ? xs : [...xs, { product: p, image: memory.current[p.id] || null }]))} />
+        <AddProduct full={full} taken={new Set(items.map((x) => x.product.id))} onAdd={(p) => setItems((xs) => (xs.length >= MAX ? xs : [...xs, { product: p, image: memory.current[p.id] || null }]))} />
       </div>
     </div>
   );
