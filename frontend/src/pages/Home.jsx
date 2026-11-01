@@ -1,11 +1,10 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowDown } from "lucide-react";
 import { useMeta, useProducts } from "@/lib/queries";
 import { img } from "@/lib/api";
 import { useSeo } from "@/lib/seo";
 import { ProductGrid } from "@/components/ProductCard";
-import { NewsletterForm } from "@/components/NewsletterForm";
 
 const ClothingRack = lazy(() => import("@/components/ClothingRack"));
 
@@ -43,13 +42,28 @@ function Hero({ hero }) {
   );
 }
 
-function Rail({ products, loading }) {
+function RailTabs({ tabs, value, onChange }) {
+  return (
+    <div className="no-scrollbar -mx-5 mb-10 flex gap-2 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0" role="tablist" aria-label="Filter the rail by category" data-testid="rack-tabs">
+      {tabs.map((t) => (
+        <button key={t.slug} type="button" role="tab" aria-selected={value === t.slug} onClick={() => onChange(t.slug)}
+          className={`shrink-0 rounded-full border px-5 py-2.5 text-[10.5px] font-medium uppercase tracking-[0.22em] transition-[background-color,color,border-color] duration-300 ${value === t.slug ? "border-ink bg-ink text-ivory" : "border-line2 bg-ivory/60 text-charcoal hover:border-ink"}`}
+          data-testid={`rack-tab-${t.slug}`}>{t.name} <span className={value === t.slug ? "text-ivory/60" : "text-mute"}>{t.count}</span></button>
+      ))}
+    </div>
+  );
+}
+
+function Rail({ products, loading, cats }) {
+  const [cat, setCat] = useState("all");
+  const tabs = [{ slug: "all", name: "All", count: products.length }, ...cats.map((c) => ({ ...c, count: products.filter((p) => p.category === c.slug).length })).filter((c) => c.count)];
+  const shown = cat === "all" ? products : products.filter((p) => p.category === cat);
   return (
     <section id="the-rail" className="showroom relative overflow-hidden py-16 sm:py-24" data-testid="home-rack-section">
       <span className="showroom-panel left-[4%] w-[26%]" aria-hidden="true" />
       <span className="showroom-panel right-[4%] w-[26%]" aria-hidden="true" />
       <div className="container-luxe relative">
-        <div className="reveal mb-10 grid gap-6 sm:mb-14 lg:grid-cols-12 lg:items-end">
+        <div className="reveal mb-10 grid gap-6 sm:mb-12 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <p className="eyebrow mb-4">The Dressella Rail</p>
             <h2 className="h-section">Step into the wardrobe</h2>
@@ -58,9 +72,10 @@ function Rail({ products, loading }) {
             Every piece on the rail is from the current collection{products.length ? ` — ${products.length} ${products.length === 1 ? "piece" : "pieces"}` : ""}. Bring one forward, then open it to choose your size.
           </p>
         </div>
+        {!loading && tabs.length > 2 && <RailTabs tabs={tabs} value={cat} onChange={setCat} />}
         {loading ? <div className="mx-auto h-[420px] max-w-4xl animate-pulse bg-beige/40" aria-busy="true" /> : (
           <Suspense fallback={<div className="mx-auto h-[420px] max-w-4xl animate-pulse bg-beige/40" aria-busy="true" />}>
-            <div className="reveal reveal-fade" style={{ "--d": "150ms" }}><ClothingRack products={products} /></div>
+            <div className="reveal reveal-fade" style={{ "--d": "150ms" }}><div key={cat} className="page-fade"><ClothingRack products={shown} /></div></div>
           </Suspense>
         )}
       </div>
@@ -165,7 +180,7 @@ export default function Home() {
   return (
     <div data-testid="home-page">
       <Hero hero={s.hero} />
-      {!isError && <Rail products={all} loading={isLoading} />}
+      {!isError && <Rail products={all} loading={isLoading} cats={cats} />}
       <Marquee words={[...cats.map((c) => c.name), ...cols.map((c) => c.name)]} />
       <section className="container-luxe grid gap-8 py-20 sm:py-32 lg:grid-cols-12" data-testid="home-manifesto">
         <p className="reveal eyebrow lg:col-span-3">DRESSELLA — Fashion for her</p>
@@ -202,12 +217,6 @@ export default function Home() {
             <p className="mt-8 max-w-lg text-sm leading-relaxed text-ivory/70 sm:text-base">DRESSELLA begins in Jaipur, where print and cloth have been a language for centuries. We choose breathable cottons and fluid rayons, keep our palettes soft and our silhouettes clean — and edit every piece for a wardrobe you'll return to, season after season.</p>
             <Link to="/about" className="btn-light mt-10" data-testid="home-brand-story-cta">Our story</Link>
           </div>
-        </div>
-      </section>
-      <section className="bg-cream" data-testid="home-newsletter">
-        <div className="container-luxe grid gap-10 py-20 sm:py-28 lg:grid-cols-12">
-          <div className="reveal lg:col-span-5"><p className="eyebrow mb-3">The DRESSELLA letter</p><h2 className="h-section">First to know</h2><p className="mt-4 text-sm text-taupe">New edits, restocks and stories from the atelier — occasionally, never noisily.</p></div>
-          <div className="reveal lg:col-span-6 lg:col-start-7 lg:pt-10" style={{ "--d": "150ms" }}><NewsletterForm /></div>
         </div>
       </section>
     </div>

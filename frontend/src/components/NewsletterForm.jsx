@@ -22,7 +22,7 @@ export function NewsletterForm({ dark, compact }) {
       setState({ status: "error", msg: errMsg(err) });
     }
   };
-  const tone = dark ? "border-ivory/30 text-ivory placeholder:text-ivory/40 focus:border-ivory" : "";
+  const tone = dark ? "border-ivory/30 bg-transparent text-ivory placeholder:text-ivory/40 focus:border-ivory focus:bg-transparent" : "";
 
   return (
     <form onSubmit={submit} noValidate data-testid={`${id}-form`}>

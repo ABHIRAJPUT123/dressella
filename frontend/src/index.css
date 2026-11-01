@@ -67,6 +67,8 @@
 .rise { animation: rise 1s cubic-bezier(.2,.7,.2,1) both; }
 .slowzoom { animation: slowzoom 2.6s cubic-bezier(.2,.7,.2,1) both; }
 .marquee { animation: marquee 38s linear infinite; }
+@keyframes pagefade { from { opacity: 0; } to { opacity: 1; } }
+.page-fade { animation: pagefade .55s ease-out both; }
 
 /* Scroll reveal (only active when JS adds .reveal-on to <html>) */
 .reveal-on .reveal { opacity: 0; transform: translate3d(0, 34px, 0); transition: opacity 1s cubic-bezier(.2,.7,.2,1), transform 1.2s cubic-bezier(.2,.7,.2,1); transition-delay: var(--d, 0ms); }

@@ -70,6 +70,24 @@ export default function Checkout() {
   const errRef = useRef(null);
   const { data: meta } = useMeta();
 
+  const clearFixed = (prefix, addr) => setErrors((er) => {
+    const keys = Object.keys(er).filter((k) => k.startsWith(prefix));
+    if (!keys.length) return er;
+    const now = validateAddress(addr);
+    const next = { ...er };
+    keys.forEach((k) => { if (!now[k.slice(prefix.length)]) delete next[k]; });
+    return next;
+  });
+  const onShip = (v) => { setShip(v); clearFixed("ship_", v); };
+  const onBill = (v) => { setBill(v); clearFixed("bill_", v); };
+  const onEmail = (v) => {
+    setEmail(v);
+    if (EMAIL_RE.test(v)) setErrors((er) => { if (!er.email) return er; const { email: _, ...rest } = er; return rest; });
+  };
+  useEffect(() => {
+    if (!Object.keys(errors).length) setFormErr((f) => (f === "Please correct the highlighted fields." ? "" : f));
+  }, [errors]);
+
   useEffect(() => {
     if (user) {
       setEmail((e) => e || user.email);
@@ -178,21 +196,21 @@ export default function Checkout() {
           <section aria-labelledby="h-contact">
             <h2 id="h-contact" className="mb-6 font-serif text-2xl">Contact</h2>
             <Field label="Email" id="checkout-email" error={errors.email}>
-              <input id="checkout-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" className="input-luxe" aria-invalid={!!errors.email} data-testid="checkout-email-input" />
+              <input id="checkout-email" type="email" value={email} onChange={(e) => onEmail(e.target.value)} autoComplete="email" className="input-luxe" aria-invalid={!!errors.email} data-testid="checkout-email-input" />
             </Field>
           </section>
           <section aria-labelledby="h-ship">
             <h2 id="h-ship" className="mb-6 font-serif text-2xl">Shipping address</h2>
             {user?.addresses?.length > 0 && (
-              <div className="mb-6 flex flex-wrap gap-2">{user.addresses.map((a) => <button type="button" key={a.id} onClick={() => setShip({ ...EMPTY_ADDR, ...a })} className={`chip h-auto px-4 py-2 text-left ${ship.line1 === a.line1 && ship.pincode === a.pincode ? "chip-on" : ""}`} data-testid={`checkout-saved-address-${a.id}`}>{a.name}, {a.city} {a.pincode}</button>)}</div>
+              <div className="mb-6 flex flex-wrap gap-2">{user.addresses.map((a) => <button type="button" key={a.id} onClick={() => onShip({ ...EMPTY_ADDR, ...a })} className={`chip h-auto px-4 py-2 text-left ${ship.line1 === a.line1 && ship.pincode === a.pincode ? "chip-on" : ""}`} data-testid={`checkout-saved-address-${a.id}`}>{a.name}, {a.city} {a.pincode}</button>)}</div>
             )}
-            <AddressForm value={ship} onChange={setShip} errors={shipErr} prefix="ship" />
+            <AddressForm value={ship} onChange={onShip} errors={shipErr} prefix="ship" />
             {user && <label className="mt-5 flex items-center gap-3 text-sm"><input type="checkbox" checked={saveAddr} onChange={(e) => setSaveAddr(e.target.checked)} className="h-4 w-4 accent-[#1A1918]" data-testid="checkout-save-address-checkbox" /> Save this address to my account</label>}
           </section>
           <section aria-labelledby="h-bill">
             <h2 id="h-bill" className="mb-6 font-serif text-2xl">Billing</h2>
             <label className="flex items-center gap-3 text-sm"><input type="checkbox" checked={billSame} onChange={(e) => setBillSame(e.target.checked)} className="h-4 w-4 accent-[#1A1918]" data-testid="checkout-billing-same-checkbox" /> Same as shipping address</label>
-            {!billSame && <div className="mt-6"><AddressForm value={bill} onChange={setBill} errors={billErr} prefix="bill" /></div>}
+            {!billSame && <div className="mt-6"><AddressForm value={bill} onChange={onBill} errors={billErr} prefix="bill" /></div>}
           </section>
           <section aria-labelledby="h-pay" className="border border-line p-6">
             <h2 id="h-pay" className="font-serif text-2xl">Payment</h2>

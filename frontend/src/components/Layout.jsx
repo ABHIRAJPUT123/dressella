@@ -11,7 +11,7 @@ function Announcement() {
   const { data } = useMeta();
   const text = data?.settings?.announcement;
   if (!text) return null;
-  return <div className="bg-umber py-2.5 text-center text-[10px] font-normal uppercase tracking-[0.3em] text-cream sm:text-[10.5px]" data-testid="announcement-bar">{text}</div>;
+  return <div className="overflow-hidden text-ellipsis whitespace-nowrap bg-umber px-4 py-2.5 text-center text-[9.5px] font-normal uppercase tracking-[0.22em] text-cream sm:text-[10.5px] sm:tracking-[0.3em]" data-testid="announcement-bar">{text}</div>;
 }
 
 export function Layout() {
@@ -27,7 +27,7 @@ export function Layout() {
       <Announcement />
       <Header />
       {isError && <div role="alert" className="bg-linen py-3 text-center text-xs text-taupe" data-testid="degraded-banner">We're experiencing a temporary issue loading the store. Some content may be unavailable — please try again shortly.</div>}
-      <main id="main" className="min-h-[60vh]"><Outlet /></main>
+      <main id="main" className="min-h-[60vh]"><div key={pathname} className="page-fade" data-testid="page-transition"><Outlet /></div></main>
       <Footer />
       <BagDrawer />
       <CookieConsent />
