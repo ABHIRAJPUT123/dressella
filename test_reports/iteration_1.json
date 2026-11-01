@@ -1,0 +1,44 @@
+{
+  "summary": "Tested the DRESSELLA redesign end to end. Backend: the existing suite passed (96 passed, 1 skipped). The skipped test is the integration test, which needs ANORA_TEST_* config. A new regression file passed 5 of 6; the failure is admin login. Frontend: the home hero and rack section render. The desktop hover rack works: data-mode=hover, 10 garments matching the API count, the hover caption shows the right title and price, the hint comes back on mouse leave, and a click opens the correct PDP. The touch rack works on 390 and 768 widths: data-mode=touch, 10 selectors, selector-5 shows the 5th product, prev/next and swipe work, tapping a neighbour selects it without navigating, and tapping the selected garment navigates. No horizontal overflow at 390/768 on any page checked. Also passed: shop sort/filter, category page, register, logout and login, account page, PDP (size error, add to bag with drawer and free-shipping progress, wishlist toggle, buy now to checkout), wishlist page, desktop and mobile search, and COD checkout through to the order view and the account orders list. CRITICAL: admin login with the provided credentials fails with 422, so the admin panel can't be reached with the real admin account. The admin UI itself works: I verified the dashboard, products and orders pages with a TEST user promoted to admin in Mongo.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "POST /api/auth/login (admin@dressella.test)", "issue": "Returns 422 'value is not a valid email address: The part after the @-sign is a special-use or reserved name'. Pydantic EmailStr (email-validator 2.3.0) rejects the .test TLD, so the seeded admin can never log in. The admin seed (seed.py seed_admin reading ADMIN_EMAIL) inserts the user, but every EmailStr-validated endpoint rejects it.", "priority": "CRITICAL"}
+    ],
+    "minor": [
+      {"endpoint": "GET /api/auth/me", "issue": "Returns 401 for guests on every page load, twice per page. This is expected, but it puts 'Failed to load resource 401' errors in the browser console. The only console errors seen are these and the 422 on a bad login."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "Admin login", "issue": "Logging in at /login with admin@dressella.test shows the raw pydantic message 'value is not a valid email address: The part after the @-sign is a special-use...' and stays on /login. Cause is on the backend (see above).", "affected_selectors": ["[data-testid=login-error]"]}
+    ],
+    "design_issues": [
+      {"screen": "Home rack (desktop and touch)", "issues": ["The rack-tag numbers (01–10) under the garments and the 'No. 04 / 10' caption line are very low contrast (light taupe on beige), nearly invisible.", "Touch mode (768): the hook of the selected garment's hanger rises above the rack bar, which looks slightly off (minor)."]},
+      {"screen": "Bag drawer, mobile 390", "issues": ["The 'Added to bag' toast at bottom-left overlaps the 'Proceed to checkout' CTA in the drawer for several seconds."]},
+      {"screen": "Checkout", "issues": ["Field errors stay visible after the user corrects a field, until the form is submitted again (e.g. 'Enter a valid 10-digit Indian mobile number' still shows next to a valid number)."]},
+      {"screen": "Order view (COD)", "issues": ["The heading says 'Your order is awaiting payment' while the status timeline says 'Confirmed' for a COD order. The copy is confusing (likely pre-existing logic)."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_redesign_regression.py", "/app/test_reports/pytest/redesign_results.xml", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "CRITICAL: Fix admin login. Change ADMIN_EMAIL in backend/.env to a deliverable-format domain (e.g. admin@dressella.in or admin@example.com), restart the backend so seed_admin creates/promotes it, and update /app/memory/test_credentials.md. Alternatively, relax EmailStr validation for .test domains (email_validator allows special-use domains to be configured). Either way, the documented credentials currently can't log in.",
+    "Make the rack number tags and the 'No. XX / NN' caption more readable (darker cocoa/charcoal).",
+    "Optional: move or shorten the 'Added to bag' toast on mobile while the bag drawer is open.",
+    "Optional: clear checkout field errors on change."
+  ],
+  "critical_code_review_comments": [
+    "ClothingRack: on touch mode, neighbouring garments are only partly visible and the active garment covers their centre. Taps still work on the visible edge (verified), but the hit area is small at 390px.",
+    "ClothingRack: SVG gradient ids 'wood' and 'brass' are repeated for every garment (10x duplicate ids in the DOM). This is valid-ish but fragile; consider a single shared <defs> or unique ids.",
+    "The existing backend integration test (test_api_integration.py) is skipped without ANORA_TEST_* config, which is why the admin login regression wasn't caught.",
+    "No secrets found in the frontend bundle (checked for admin password, mongodb, Razorpay secrets)."
+  ],
+  "updated_files": ["/app/backend/tests/test_redesign_regression.py"],
+  "success_rate": {"backend": "99% (101/102 incl. existing suite; admin login failing)", "frontend": "95% (all redesign/rack/customer flows pass; real admin login blocked)"},
+  "test_credentials": "Admin admin@dressella.test / Dressella-0PA6Gfz73hkT3pXq does NOT work (422). TEST admin created: t1admin@example.com / T1Admin#2026pass (role promoted to admin directly in Mongo). Customer: t1shopper1793560624@example.com / Shopper#2026pass",
+  "seed_data_creation": "Registered t1shopper1793560624@example.com (placed 1 COD order, ANR2611728012) and t1admin@example.com (role set to admin via Mongo for UI testing). Plus a few test_t1_*@example.com users from the pytest run.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Rack tests: desktop 1920x800 = hover mode, 390/768 = touch mode. In touch mode, tap neighbours at their visible edge (Playwright's centre click is intercepted by the active garment). Size buttons: use [role=radio]; [data-testid^=pdp-size-] also matches pdp-size-guide-button. Razorpay isn't configured, so COD is auto-selected. Re-check admin login after the ADMIN_EMAIL fix.",
+  "rca of the issue": "Admin login 422: backend/.env sets ADMIN_EMAIL=admin@dressella.test. LoginIn.email is pydantic EmailStr, and email-validator 2.3.0 rejects special-use TLDs (.test, .local, .invalid, .localhost) before the password is checked. Reproduce: curl -X POST $URL/api/auth/login -d '{\"email\":\"admin@dressella.test\",\"password\":\"...\"}' returns 422. Mitigation: use a normal domain for ADMIN_EMAIL, or set email_validator.SPECIAL_USE_DOMAIN_NAMES to exclude 'test' at app start."
+}

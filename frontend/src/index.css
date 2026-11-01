@@ -79,7 +79,7 @@
 .rack-floor { position: absolute; left: -100vw; right: -100vw; height: 900px; z-index: 0; pointer-events: none;
     background: linear-gradient(180deg, rgba(74, 58, 44, .22), rgba(74, 58, 44, 0) 6%), repeating-linear-gradient(90deg, rgba(74, 58, 44, .07) 0 1px, transparent 1px 120px), linear-gradient(180deg, #CDB89A, #C4AE8F 40%); }
 
-.rack-stage { perspective: 1600px; perspective-origin: 50% 30%; touch-action: pan-y; }
+.rack-stage { perspective: 1600px; perspective-origin: 50% 24px; touch-action: pan-y; }
 .rack-bar { position: absolute; left: -6px; right: -6px; height: 7px; border-radius: 4px; background: linear-gradient(180deg, #4b4744 0%, #141211 45%, #050505 100%); box-shadow: 0 6px 10px -4px rgba(0, 0, 0, .45); z-index: 1; }
 .rack-base { height: 6px; }
 .rack-post { position: absolute; bottom: 30px; width: 7px; border-radius: 3px; background: linear-gradient(90deg, #050505, #3c3936 45%, #0b0a09); z-index: 1; }
@@ -102,7 +102,7 @@
         linear-gradient(90deg, rgba(23, 21, 19, .3) 0%, rgba(23, 21, 19, 0) 16%, rgba(255, 255, 255, 0) 50%, rgba(23, 21, 19, 0) 84%, rgba(23, 21, 19, .3) 100%),
         repeating-linear-gradient(90deg, transparent 0 21%, rgba(255, 255, 255, .07) 23%, rgba(0, 0, 0, .05) 26%, transparent 29%),
         linear-gradient(0deg, rgba(23, 21, 19, .18) 0%, rgba(23, 21, 19, 0) 10%); }
-.rack-tag { position: absolute; z-index: 3; left: 50%; bottom: -26px; transform: translateX(-50%); font-family: Italiana, serif; font-size: 11px; letter-spacing: .25em; color: #7A5F48; opacity: .7; transition: opacity .4s ease; }
+.rack-tag { position: absolute; z-index: 3; left: 50%; bottom: -26px; transform: translateX(-50%); font-family: Italiana, serif; font-size: 12px; letter-spacing: .25em; color: #4A3A2C; opacity: .85; transition: opacity .4s ease; }
 .rack-garment.is-active .rack-tag { opacity: 1; color: #171513; }
 
 @media (prefers-reduced-motion: reduce) {

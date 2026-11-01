@@ -31,20 +31,25 @@ function usePointerFine() {
   return fine;
 }
 
-export const Hanger = () => (
-  <svg viewBox="0 0 200 74" className="rack-hanger" aria-hidden="true">
+export const RackDefs = () => (
+  <svg width="0" height="0" className="absolute" aria-hidden="true" focusable="false">
     <defs>
-      <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <linearGradient id="rack-wood" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stopColor="#8A6342" /><stop offset=".55" stopColor="#5E3F27" /><stop offset="1" stopColor="#3E2818" />
       </linearGradient>
-      <linearGradient id="brass" x1="0" y1="0" x2="1" y2="0">
+      <linearGradient id="rack-brass" x1="0" y1="0" x2="1" y2="0">
         <stop offset="0" stopColor="#8C7350" /><stop offset=".5" stopColor="#E3CFA4" /><stop offset="1" stopColor="#8C7350" />
       </linearGradient>
     </defs>
-    <path d="M100 34 V16 C100 6 112 4 114 12" fill="none" stroke="url(#brass)" strokeWidth="3.2" strokeLinecap="round" />
-    <path d="M7 64 Q100 18 193 64" fill="none" stroke="url(#wood)" strokeWidth="9" strokeLinecap="round" />
+  </svg>
+);
+
+export const Hanger = () => (
+  <svg viewBox="0 0 200 74" className="rack-hanger" aria-hidden="true">
+    <path d="M100 34 V16 C100 6 112 4 114 12" fill="none" stroke="url(#rack-brass)" strokeWidth="3.2" strokeLinecap="round" />
+    <path d="M7 64 Q100 18 193 64" fill="none" stroke="url(#rack-wood)" strokeWidth="9" strokeLinecap="round" />
     <path d="M18 66 H182" stroke="#4A3120" strokeWidth="2.6" strokeLinecap="round" />
-    <circle cx="100" cy="36" r="4.2" fill="url(#brass)" />
+    <circle cx="100" cy="36" r="4.2" fill="url(#rack-brass)" />
   </svg>
 );
 
@@ -93,7 +98,7 @@ function touchPose(i, sel, w) {
   const d = i - sel;
   const a = Math.abs(d);
   const s = Math.sign(d);
-  if (d === 0) return { transform: "translate3d(0,-6px,60px)", zIndex: 200 };
+  if (d === 0) return { transform: "translate3d(0,0,60px)", zIndex: 200 };
   const x = s * (w * 0.5 + (a - 1) * w * 0.24);
   return { transform: `translate3d(${x}px,0,-${a * 90}px) rotateY(${-s * 24}deg)`, zIndex: 100 - a, opacity: a > 3 ? 0 : 1, filter: `brightness(${1 - a * 0.06})`, pointerEvents: a > 3 ? "none" : undefined };
 }
@@ -102,7 +107,7 @@ function Caption({ p, i, total, hint }) {
   if (!p) return <p className="text-center text-xs uppercase tracking-[0.28em] text-taupe" data-testid="rack-hint">{hint}</p>;
   return (
     <div className="flex flex-col items-center gap-2 text-center" aria-live="polite" data-testid="rack-caption">
-      <p className="font-display text-sm tracking-[0.3em] text-cocoa">No. {String(i + 1).padStart(2, "0")} <span className="text-mute">/ {String(total).padStart(2, "0")}</span></p>
+      <p className="font-display text-sm tracking-[0.3em] text-umber">No. {String(i + 1).padStart(2, "0")} <span className="text-taupe">/ {String(total).padStart(2, "0")}</span></p>
       <p className="font-serif text-2xl leading-tight sm:text-3xl" data-testid="rack-caption-title">{p.title}</p>
       <div className="flex items-center gap-4 text-sm">
         <span data-testid="rack-caption-price">{inr(p.price)}</span>
@@ -144,6 +149,7 @@ function RackInner({ products }) {
 
   return (
     <div data-testid="clothing-rack" data-mode={fine ? "hover" : "touch"}>
+      <RackDefs />
       <div ref={box} className="rack-stage relative mx-auto w-full" style={{ height }} onMouseLeave={() => setHover(null)} onTouchStart={fine ? undefined : onTouchStart} onTouchEnd={fine ? undefined : onTouchEnd}>
         {W > 0 && (
           <>

@@ -83,7 +83,7 @@ export default function App() {
                     </Route>
                   </Routes>
                 </Suspense>
-                <Toaster position="bottom-left" toastOptions={{ className: "rounded-none border-line bg-ivory font-sans" }} />
+                <Toaster position="top-center" toastOptions={{ className: "rounded-none border-line bg-ivory font-sans" }} />
               </CartProvider>
             </WishlistProvider>
           </AuthProvider>
